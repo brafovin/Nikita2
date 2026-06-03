@@ -1024,6 +1024,7 @@ function drawHUD() {
 }
 
 function draw() {
+  if(!currentMap) return;
   ctx.clearRect(0,0,700,520);
   drawScene();
   drawTowerPreview();
