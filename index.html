@@ -21,14 +21,14 @@
     font-weight: bold;
     color: #f0e040;
     text-shadow: 0 0 20px #f0a000, 2px 2px 0 #a06000;
-    padding: 8px 0 4px 0;
+    padding: 6px 0 2px 0;
     letter-spacing: 3px;
   }
   #game-area {
     display: flex;
     gap: 10px;
     align-items: flex-start;
-    padding: 4px 10px 4px 10px;
+    padding: 4px 10px;
   }
   #canvas {
     border: 3px solid #f0a000;
@@ -37,23 +37,23 @@
     display: block;
   }
   #sidebar {
-    width: 180px;
+    width: 200px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
+    max-height: 530px;
+    overflow-y: auto;
   }
+  #sidebar::-webkit-scrollbar { width: 4px; }
+  #sidebar::-webkit-scrollbar-thumb { background: #0f3460; border-radius: 2px; }
   #stats {
     background: #16213e;
     border: 2px solid #0f3460;
     border-radius: 8px;
-    padding: 10px;
-    font-size: 0.85rem;
+    padding: 8px 10px;
+    font-size: 0.82rem;
   }
-  .stat-row {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 5px;
-  }
+  .stat-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
   .stat-label { color: #aaa; }
   .stat-val { font-weight: bold; color: #f0e040; }
   #towers-panel {
@@ -63,41 +63,24 @@
     padding: 8px;
   }
   #towers-panel h3 {
-    font-size: 0.85rem;
-    color: #aaa;
-    margin-bottom: 8px;
-    text-align: center;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    font-size: 0.8rem; color: #aaa; margin-bottom: 6px;
+    text-align: center; text-transform: uppercase; letter-spacing: 1px;
   }
   .tower-btn {
-    width: 100%;
-    margin-bottom: 6px;
-    padding: 8px 6px;
-    border-radius: 6px;
-    border: 2px solid transparent;
-    cursor: pointer;
-    font-size: 0.8rem;
-    font-weight: bold;
-    transition: all 0.15s;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: #0f3460;
-    color: #fff;
+    width: 100%; margin-bottom: 5px; padding: 6px 5px;
+    border-radius: 6px; border: 2px solid transparent;
+    cursor: pointer; font-size: 0.78rem; font-weight: bold;
+    transition: all 0.15s; display: flex; align-items: center;
+    gap: 7px; background: #0f3460; color: #fff;
   }
-  .tower-btn:hover { transform: scale(1.03); filter: brightness(1.2); }
-  .tower-btn.selected { border-color: #f0e040; box-shadow: 0 0 10px #f0a000; }
-  .tower-btn.too-expensive { opacity: 0.45; cursor: not-allowed; }
-  .tower-icon {
-    width: 28px; height: 28px;
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 14px; flex-shrink: 0;
-  }
-  .tower-info { text-align: left; }
-  .tower-name { font-size: 0.8rem; }
-  .tower-cost { font-size: 0.72rem; color: #f0e040; }
+  .tower-btn:hover { filter: brightness(1.2); }
+  .tower-btn.selected { border-color: #f0e040; box-shadow: 0 0 8px #f0a000; }
+  .tower-btn.too-expensive { opacity: 0.4; cursor: not-allowed; }
+  .tower-icon { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
+  .tower-name { font-size: 0.78rem; }
+  .tower-cost { font-size: 0.7rem; color: #f0e040; }
+
+  /* Upgrade Panel */
   #upgrade-panel {
     background: #16213e;
     border: 2px solid #0f3460;
@@ -105,85 +88,88 @@
     padding: 8px;
     display: none;
   }
-  #upgrade-panel h3 { font-size: 0.8rem; color: #aaa; margin-bottom: 6px; text-align: center; }
-  .upgrade-btn {
-    width: 100%; margin-bottom: 5px;
-    padding: 6px; border-radius: 5px;
-    border: none; cursor: pointer;
-    font-size: 0.75rem; font-weight: bold;
-    background: #0f6460; color: #fff;
+  #upgrade-panel h3 { font-size: 0.8rem; color: #aaa; margin-bottom: 8px; text-align: center; }
+  .upgrade-path {
+    margin-bottom: 8px;
+    background: #0a1a30;
+    border-radius: 6px;
+    padding: 6px;
+  }
+  .path-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 5px; font-size: 0.72rem; color: #aaa;
+  }
+  .path-name { font-weight: bold; }
+  .path-pips { display: flex; gap: 3px; }
+  .pip {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: #333; border: 1px solid #555;
+    transition: all 0.2s;
+  }
+  .pip.filled { background: #f0e040; border-color: #f0a000; box-shadow: 0 0 4px #f0a000; }
+  .pip.filled.t3 { background: #e74c3c; border-color: #c00; box-shadow: 0 0 4px #e74c3c; }
+  .pip.filled.t4 { background: #9b59b6; border-color: #7d3c98; box-shadow: 0 0 4px #9b59b6; }
+  .pip.filled.t5 { background: #f39c12; border-color: #e67e22; box-shadow: 0 0 6px #f39c12; }
+  .upgrade-tier-btn {
+    width: 100%; padding: 4px 6px; border-radius: 4px; border: none;
+    cursor: pointer; font-size: 0.68rem; font-weight: bold;
+    background: #0f5460; color: #fff; margin-bottom: 3px;
+    display: flex; justify-content: space-between; align-items: center;
     transition: all 0.15s;
   }
-  .upgrade-btn:hover:not(:disabled) { filter: brightness(1.2); }
-  .upgrade-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .upgrade-tier-btn:hover:not(:disabled) { filter: brightness(1.25); }
+  .upgrade-tier-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .upgrade-tier-btn.done { background: #1a3a20; border-left: 3px solid #27ae60; }
+  .upgrade-tier-btn.t3 { background: #3a1a0a; border-left: 3px solid #e74c3c; }
+  .upgrade-tier-btn.t4 { background: #2a1040; border-left: 3px solid #9b59b6; }
+  .upgrade-tier-btn.t5 { background: #3a2000; border-left: 3px solid #f39c12; }
+  .tier-cost { color: #f0e040; font-size: 0.65rem; }
   #sell-btn {
-    width: 100%; padding: 6px; border-radius: 5px;
-    border: none; cursor: pointer; font-size: 0.75rem;
-    font-weight: bold; background: #7a0000; color: #fff;
-    transition: all 0.15s;
+    width: 100%; padding: 5px; border-radius: 5px; border: none;
+    cursor: pointer; font-size: 0.75rem; font-weight: bold;
+    background: #7a0000; color: #fff; transition: all 0.15s; margin-top: 4px;
   }
   #sell-btn:hover { filter: brightness(1.2); }
-  #action-btns {
-    display: flex; flex-direction: column; gap: 6px;
-  }
+
+  #action-btns { display: flex; flex-direction: column; gap: 5px; }
   #start-btn, #speed-btn {
-    padding: 10px; border-radius: 8px; border: none;
-    cursor: pointer; font-size: 0.9rem; font-weight: bold;
+    padding: 9px; border-radius: 8px; border: none;
+    cursor: pointer; font-size: 0.88rem; font-weight: bold;
     transition: all 0.15s; width: 100%;
   }
   #start-btn { background: #16a34a; color: #fff; }
-  #start-btn:hover { filter: brightness(1.15); }
+  #start-btn:hover:not(:disabled) { filter: brightness(1.15); }
   #start-btn:disabled { background: #444; cursor: not-allowed; }
   #speed-btn { background: #1d4ed8; color: #fff; }
   #speed-btn:hover { filter: brightness(1.15); }
+
   #bloon-legend {
-    background: #16213e;
-    border: 2px solid #0f3460;
-    border-radius: 8px;
-    padding: 8px;
-    font-size: 0.72rem;
+    background: #16213e; border: 2px solid #0f3460;
+    border-radius: 8px; padding: 7px; font-size: 0.7rem;
   }
-  #bloon-legend h3 { color: #aaa; margin-bottom: 6px; text-align: center; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; }
-  .legend-row { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
-  .legend-circle {
-    width: 16px; height: 16px; border-radius: 50%;
-    flex-shrink: 0; border: 1px solid rgba(255,255,255,0.3);
-  }
+  #bloon-legend h3 { color: #aaa; margin-bottom: 5px; text-align: center; font-size: 0.73rem; text-transform: uppercase; letter-spacing: 1px; }
+  .legend-row { display: flex; align-items: center; gap: 5px; margin-bottom: 3px; }
+  .legend-circle { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.3); }
+
   #message {
     position: fixed; top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(0,0,0,0.92);
-    border: 3px solid #f0a000;
-    border-radius: 16px;
-    padding: 30px 50px;
-    text-align: center;
-    display: none;
-    z-index: 100;
+    transform: translate(-50%,-50%);
+    background: rgba(0,0,0,0.93);
+    border: 3px solid #f0a000; border-radius: 16px;
+    padding: 30px 50px; text-align: center; display: none; z-index: 100;
   }
   #message h2 { font-size: 2rem; margin-bottom: 10px; }
   #message p { color: #aaa; margin-bottom: 20px; }
   #message button {
     padding: 12px 30px; border-radius: 8px; border: none;
-    background: #16a34a; color: #fff; font-size: 1rem;
-    font-weight: bold; cursor: pointer;
+    background: #16a34a; color: #fff; font-size: 1rem; font-weight: bold; cursor: pointer;
   }
-  #message button:hover { filter: brightness(1.15); }
-  #range-circle {
-    position: absolute;
-    border-radius: 50%;
-    border: 2px dashed rgba(255,255,255,0.4);
-    pointer-events: none;
-    display: none;
-  }
-  canvas { position: relative; }
 </style>
 </head>
 <body>
 <div id="title">🎈 BLOON POP 🎈</div>
 <div id="game-area">
-  <div style="position:relative;">
-    <canvas id="canvas" width="700" height="520"></canvas>
-  </div>
+  <canvas id="canvas" width="700" height="520"></canvas>
   <div id="sidebar">
     <div id="stats">
       <div class="stat-row"><span class="stat-label">❤️ Leben</span><span class="stat-val" id="stat-lives">150</span></div>
@@ -199,7 +185,7 @@
 
     <div id="upgrade-panel">
       <h3 id="upgrade-title">Turm</h3>
-      <div id="upgrade-slots"></div>
+      <div id="upgrade-paths"></div>
       <button id="sell-btn">Verkaufen</button>
     </div>
 
@@ -223,13 +209,15 @@
 </div>
 
 <div id="message">
-  <h2 id="msg-title">GAME OVER</h2>
-  <p id="msg-sub">Alle Leben verloren!</p>
+  <h2 id="msg-title"></h2>
+  <p id="msg-sub"></p>
   <button onclick="restartGame()">Neu starten</button>
 </div>
 
 <script>
-// ========== PATH ==========
+// =====================================================================
+// PATH
+// =====================================================================
 const PATH = [
   {x:0,   y:130},
   {x:160, y:130},
@@ -240,434 +228,648 @@ const PATH = [
   {x:240, y:370},
   {x:520, y:370},
   {x:520, y:180},
-  {x:620, y:180},
   {x:700, y:180},
 ];
 
-// ========== BLOON TYPES ==========
+// =====================================================================
+// BLOON TYPES
+// =====================================================================
 const BLOON_TYPES = {
-  red:    { color:'#e74c3c', hp:1,  speed:1.0, size:12, reward:1,  name:'Rot' },
-  blue:   { color:'#3498db', hp:2,  speed:1.2, size:13, reward:2,  name:'Blau' },
-  green:  { color:'#27ae60', hp:3,  speed:1.4, size:13, reward:3,  name:'Grün' },
-  yellow: { color:'#f39c12', hp:4,  speed:1.8, size:12, reward:4,  name:'Gelb' },
-  pink:   { color:'#ff69b4', hp:5,  speed:2.2, size:13, reward:5,  name:'Pink' },
-  black:  { color:'#555',    hp:6,  speed:1.5, size:14, reward:6,  name:'Schwarz' },
-  ceramic:{ color:'#8B4513', hp:10, speed:1.2, size:16, reward:15, name:'Keramik' },
-  moab:   { color:'#d4af37', hp:50, speed:0.7, size:24, reward:50, name:'MOAB',
-    border:'#8B0000', borderW:3 },
+  red:    { color:'#e74c3c', hp:1,  speed:1.0, size:11, reward:1,  name:'Rot' },
+  blue:   { color:'#3498db', hp:2,  speed:1.2, size:12, reward:2,  name:'Blau' },
+  green:  { color:'#27ae60', hp:3,  speed:1.4, size:12, reward:3,  name:'Grün' },
+  yellow: { color:'#f39c12', hp:4,  speed:1.8, size:11, reward:4,  name:'Gelb' },
+  pink:   { color:'#ff69b4', hp:5,  speed:2.2, size:12, reward:5,  name:'Pink' },
+  black:  { color:'#555',    hp:6,  speed:1.5, size:13, reward:6,  name:'Schwarz' },
+  ceramic:{ color:'#8B4513', hp:10, speed:1.2, size:15, reward:15, name:'Keramik' },
+  moab:   { color:'#d4af37', hp:50, speed:0.7, size:23, reward:50, name:'MOAB', border:'#8B0000', borderW:3 },
 };
 
-// ========== TOWER TYPES ==========
-const TOWER_TYPES = [
+// =====================================================================
+// TOWER DEFINITIONS  –  3 paths × 5 tiers each (BTD6-style)
+// upgrades[path][tier] = { name, cost, desc, apply(towerInstance) }
+// =====================================================================
+const TOWER_DEFS = [
   {
-    id:'dart', name:'Dart Affe', cost:170, icon:'🐒', color:'#8B6914',
-    range:120, fireRate:30, damage:1, projectileSpeed:7,
-    projectileColor:'#555', projectileSize:5, pierce:1,
-    upgrades:[
-      {name:'Schneller Schuss', cost:200, desc:'Feuerrate +50%', apply:(t)=>{ t.fireRate=Math.max(10,t.fireRate*0.67); }},
-      {name:'Mehr Reichweite', cost:180, desc:'Reichweite +30', apply:(t)=>{ t.range+=30; }},
-      {name:'Scharfe Darts', cost:300, desc:'Schaden +1, Pierce +1', apply:(t)=>{ t.damage++; t.pierce++; }},
-    ]
+    id: 'dart',
+    name: 'Dart Affe',
+    cost: 170,
+    icon: '🐒',
+    color: '#8B6914',
+    // Base stats
+    range: 120, fireRate: 30, damage: 1,
+    projectileSpeed: 7, projectileColor: '#555', projectileSize: 5, pierce: 1,
+    upgrades: [
+      // Path 0 – Schärfere Darts (Damage / Pierce)
+      [
+        { name:'Scharfe Darts',    cost:170, desc:'+1 Pierce',        apply:t=>{ t.pierce++; } },
+        { name:'Rasiermesser',     cost:200, desc:'+1 Pierce +1 Dmg', apply:t=>{ t.pierce++; t.damage++; } },
+        { name:'Spike-o-pult',     cost:300, desc:'Wechselt zu Ball, +3 Dmg, +3 Pierce', apply:t=>{ t.isBall=true; t.damage+=3; t.pierce+=3; t.projectileSize=10; } },
+        { name:'Juggernaut',       cost:1000,desc:'+5 Dmg, Riesen-Ball', apply:t=>{ t.damage+=5; t.projectileSize=16; t.pierce+=5; } },
+        { name:'Ultra-Juggernaut', cost:5000,desc:'3x Ball, enorme Kraft', apply:t=>{ t.tripleShot=true; t.damage+=10; t.pierce+=10; } },
+      ],
+      // Path 1 – Feuerrate
+      [
+        { name:'Schneller Schuss', cost:100, desc:'Feuerrate +30%', apply:t=>{ t.fireRate=Math.ceil(t.fireRate*0.7); } },
+        { name:'Sehr Schnell',     cost:150, desc:'Feuerrate +30%', apply:t=>{ t.fireRate=Math.ceil(t.fireRate*0.7); } },
+        { name:'Dreifach-Schuss',  cost:400, desc:'3 Darts gleichzeitig', apply:t=>{ t.spreadTriple=true; } },
+        { name:'Super-Fan-Club',   cost:2000,desc:'Feuerrate x5',  apply:t=>{ t.fireRate=Math.max(3,Math.floor(t.fireRate/5)); } },
+        { name:'Tech Terror',      cost:5000,desc:'+10 Dmg, Laserstrahlen', apply:t=>{ t.isLaser=true; t.damage+=10; t.pierce=20; t.fireRate=Math.max(2,t.fireRate); } },
+      ],
+      // Path 2 – Reichweite
+      [
+        { name:'Lange Reichweite', cost:100, desc:'Reichweite +20', apply:t=>{ t.range+=20; } },
+        { name:'Größere Sicht',    cost:150, desc:'Reichweite +20', apply:t=>{ t.range+=20; } },
+        { name:'Noch Länger',      cost:220, desc:'Reichweite +30', apply:t=>{ t.range+=30; } },
+        { name:'Ultra-Reichweite', cost:400, desc:'Reichweite +50', apply:t=>{ t.range+=50; } },
+        { name:'Armbrust-Meister', cost:2000,desc:'Reichweite max, +3 Dmg', apply:t=>{ t.range=999; t.damage+=3; t.isSniper=true; } },
+      ],
+    ],
   },
   {
-    id:'tack', name:'Tack Schütze', cost:360, icon:'📌', color:'#b04000',
-    range:90, fireRate:50, damage:1, projectileSpeed:6,
-    projectileColor:'#b04000', projectileSize:4, pierce:1,
-    spreadShot:8,
-    upgrades:[
-      {name:'Mehr Stacheln', cost:250, desc:'16 Stacheln pro Schuss', apply:(t)=>{ t.spreadShot=16; }},
-      {name:'Schneller Schuss', cost:300, desc:'Feuerrate +40%', apply:(t)=>{ t.fireRate=Math.max(15,t.fireRate*0.6); }},
-      {name:'Roter Stacheln', cost:500, desc:'Schaden +2', apply:(t)=>{ t.damage+=2; }},
-    ]
+    id: 'tack',
+    name: 'Tack Schütze',
+    cost: 360,
+    icon: '📌',
+    color: '#b04000',
+    range: 90, fireRate: 50, damage: 1,
+    projectileSpeed: 6, projectileColor: '#b04000', projectileSize: 4,
+    pierce: 1, spreadShot: 8,
+    upgrades: [
+      // Path 0 – Mehr Stacheln
+      [
+        { name:'Mehr Stacheln',   cost:100, desc:'16 Stacheln',    apply:t=>{ t.spreadShot=16; } },
+        { name:'Noch Mehr',       cost:200, desc:'24 Stacheln',    apply:t=>{ t.spreadShot=24; } },
+        { name:'Tack-Sprüher',    cost:300, desc:'32 Stacheln',    apply:t=>{ t.spreadShot=32; } },
+        { name:'Overdrive',       cost:800, desc:'+2 Dmg, 32 Stacheln sehr schnell', apply:t=>{ t.damage+=2; t.fireRate=Math.max(8,Math.floor(t.fireRate*0.4)); } },
+        { name:'Die Tack-Zone',   cost:4000,desc:'Dauerangriff, +5 Dmg', apply:t=>{ t.tacZone=true; t.damage+=5; t.fireRate=3; t.range+=20; } },
+      ],
+      // Path 1 – Feuerrate
+      [
+        { name:'Schnelleres Nachladen', cost:150, desc:'Feuerrate +35%',apply:t=>{ t.fireRate=Math.ceil(t.fireRate*0.65); } },
+        { name:'Klingen-Schütze',       cost:200, desc:'Feuerrate +35%',apply:t=>{ t.fireRate=Math.ceil(t.fireRate*0.65); } },
+        { name:'Klingen-Maelstrom',     cost:700, desc:'Feuerrate x3',  apply:t=>{ t.fireRate=Math.max(6,Math.floor(t.fireRate/3)); } },
+        { name:'Super-Maelstrom',       cost:2000,desc:'Feuerrate x2',  apply:t=>{ t.fireRate=Math.max(3,Math.floor(t.fireRate/2)); t.damage++; } },
+        { name:'Teppich-Bomben',        cost:5000,desc:'+8 Dmg, Wellen', apply:t=>{ t.carpetBomb=true; t.damage+=8; t.pierce+=10; } },
+      ],
+      // Path 2 – Feuer-Schaden
+      [
+        { name:'Heiße Schüsse',   cost:200, desc:'+1 Dmg',         apply:t=>{ t.damage++; } },
+        { name:'Feuerring',       cost:350, desc:'Dmg +1, Pierce+2',apply:t=>{ t.damage++; t.pierce+=2; } },
+        { name:'Inferno-Ring',    cost:1000,desc:'+3 Dmg, Feuer',  apply:t=>{ t.isFlame=true; t.damage+=3; t.projectileColor='#ff4400'; } },
+        { name:'Lava-Ring',       cost:2500,desc:'+5 Dmg',         apply:t=>{ t.damage+=5; } },
+        { name:'Höllensturm',     cost:6000,desc:'+10 Dmg, Explosion bei Treffer', apply:t=>{ t.onHitExplode=true; t.blastRadius=25; t.damage+=10; } },
+      ],
+    ],
   },
   {
-    id:'sniper', name:'Sniper', cost:350, icon:'🎯', color:'#2c3e50',
-    range:999, fireRate:90, damage:2, projectileSpeed:20,
-    projectileColor:'#ecf0f1', projectileSize:4, pierce:1, isSniper:true,
-    upgrades:[
-      {name:'Full Metal Jacket', cost:400, desc:'Schaden +3', apply:(t)=>{ t.damage+=3; }},
-      {name:'Semi-Auto', cost:500, desc:'Feuerrate +60%', apply:(t)=>{ t.fireRate=Math.max(20,t.fireRate*0.4); }},
-      {name:'Armor Piercing', cost:600, desc:'Pierce +4', apply:(t)=>{ t.pierce+=4; }},
-    ]
+    id: 'sniper',
+    name: 'Sniper',
+    cost: 350,
+    icon: '🎯',
+    color: '#2c3e50',
+    range: 999, fireRate: 90, damage: 2,
+    projectileSpeed: 20, projectileColor: '#ecf0f1', projectileSize: 4,
+    pierce: 1, isSniper: true,
+    upgrades: [
+      // Path 0 – Schaden
+      [
+        { name:'Full Metal Jacket', cost:300, desc:'+2 Dmg', apply:t=>{ t.damage+=2; } },
+        { name:'Armor Piercing',    cost:400, desc:'+3 Dmg, +2 Pierce', apply:t=>{ t.damage+=3; t.pierce+=2; } },
+        { name:'Point Five Oh',     cost:600, desc:'+5 Dmg', apply:t=>{ t.damage+=5; } },
+        { name:'Bouncing Bullet',   cost:1800,desc:'+5 Dmg, Abprallen×3', apply:t=>{ t.bouncing=3; t.damage+=5; } },
+        { name:'Elite Defender',    cost:6000,desc:'+15 Dmg, extrem schnell', apply:t=>{ t.damage+=15; t.fireRate=Math.max(5,Math.floor(t.fireRate*0.2)); } },
+      ],
+      // Path 1 – Feuerrate
+      [
+        { name:'Semi-Auto',       cost:300, desc:'Feuerrate +50%',    apply:t=>{ t.fireRate=Math.ceil(t.fireRate*0.5); } },
+        { name:'Full-Auto',       cost:450, desc:'Feuerrate +40%',    apply:t=>{ t.fireRate=Math.ceil(t.fireRate*0.6); } },
+        { name:'Schnellfeuer',    cost:800, desc:'Feuerrate +40%',    apply:t=>{ t.fireRate=Math.ceil(t.fireRate*0.6); } },
+        { name:'Elite-Sniper',    cost:2000,desc:'+$1 Geld pro Schuss', apply:t=>{ t.moneyPerShot=1; } },
+        { name:'Weltklasse-Sniper',cost:8000,desc:'x3 Dmg, +$3/Schuss', apply:t=>{ t.damage*=3; t.moneyPerShot=3; } },
+      ],
+      // Path 2 – Spezial
+      [
+        { name:'Nachtsicht',      cost:200, desc:'Kein Geländemalus', apply:t=>{ t.nightVision=true; } },
+        { name:'Zoomscope',       cost:300, desc:'+1 Pierce',         apply:t=>{ t.pierce++; } },
+        { name:'Sprengstoff-Runden', cost:900, desc:'Kleine Explosion bei Treffer', apply:t=>{ t.isExplosive=true; t.blastRadius=20; t.onHitExplode=true; } },
+        { name:'Supply-Drop',     cost:3000,desc:'Jede Runde +$500', apply:t=>{ t.supplyDrop=true; } },
+        { name:'Minigun',         cost:7000,desc:'Feuerrate x10, Pierce 10', apply:t=>{ t.fireRate=Math.max(2,Math.floor(t.fireRate/10)); t.pierce=10; t.damage+=8; } },
+      ],
+    ],
   },
   {
-    id:'bomb', name:'Bombe', cost:650, icon:'💣', color:'#555',
-    range:130, fireRate:80, damage:1, projectileSpeed:5,
-    projectileColor:'#333', projectileSize:7, pierce:1,
-    isExplosive:true, blastRadius:40,
-    upgrades:[
-      {name:'Großer Sprengkopf', cost:400, desc:'Explosionsradius +20', apply:(t)=>{ t.blastRadius+=20; }},
-      {name:'Sprengstoff+', cost:500, desc:'Schaden +2 in Explosion', apply:(t)=>{ t.damage+=2; }},
-      {name:'MOAB Mauler', cost:800, desc:'MOAB-Schaden x10', apply:(t)=>{ t.moabMauler=true; }},
-    ]
+    id: 'bomb',
+    name: 'Bombe',
+    cost: 650,
+    icon: '💣',
+    color: '#555',
+    range: 130, fireRate: 80, damage: 1,
+    projectileSpeed: 5, projectileColor: '#333', projectileSize: 7,
+    pierce: 1, isExplosive: true, blastRadius: 40,
+    upgrades: [
+      // Path 0 – Explosion
+      [
+        { name:'Großer Sprengkopf', cost:300, desc:'Radius +20',         apply:t=>{ t.blastRadius+=20; } },
+        { name:'Noch Größer',       cost:400, desc:'Radius +20',         apply:t=>{ t.blastRadius+=20; } },
+        { name:'Cluster-Bomben',    cost:700, desc:'5 Cluster-Bomben',   apply:t=>{ t.clusterBomb=true; } },
+        { name:'MOAB-Mauler',       cost:2000,desc:'×10 Dmg gegen MOAB', apply:t=>{ t.moabMauler=true; t.damage+=2; } },
+        { name:'MOAB-Eliminator',   cost:7500,desc:'Riesige Explosion',  apply:t=>{ t.moabElim=true; t.damage+=20; t.blastRadius+=40; } },
+      ],
+      // Path 1 – Schaden
+      [
+        { name:'Sprengstoff+',    cost:350, desc:'+1 Dmg',              apply:t=>{ t.damage++; } },
+        { name:'Mehr Kraft',      cost:500, desc:'+2 Dmg',              apply:t=>{ t.damage+=2; } },
+        { name:'MOAB-Bombe',      cost:900, desc:'+5 Dmg vs MOAB',      apply:t=>{ t.damage+=3; t.moabMauler=true; } },
+        { name:'Titan-Bombe',     cost:2500,desc:'+8 Dmg',              apply:t=>{ t.damage+=8; } },
+        { name:'Nuclear-Bombe',   cost:9000,desc:'+20 Dmg, riesig',     apply:t=>{ t.damage+=20; t.blastRadius+=60; } },
+      ],
+      // Path 2 – Feuerrate
+      [
+        { name:'Schnelleres Ziel', cost:250, desc:'Feuerrate +25%',     apply:t=>{ t.fireRate=Math.ceil(t.fireRate*0.75); } },
+        { name:'Schnelle Bomben',  cost:350, desc:'Feuerrate +25%',     apply:t=>{ t.fireRate=Math.ceil(t.fireRate*0.75); } },
+        { name:'Rapid Reload',     cost:600, desc:'Feuerrate +40%',     apply:t=>{ t.fireRate=Math.ceil(t.fireRate*0.6); } },
+        { name:'Long Range',       cost:1200,desc:'Reichweite +40',     apply:t=>{ t.range+=40; } },
+        { name:'Bomber Ace',       cost:4000,desc:'Feuerrate x3',       apply:t=>{ t.fireRate=Math.max(8,Math.floor(t.fireRate/3)); t.damage+=5; } },
+      ],
+    ],
   },
   {
-    id:'ice', name:'Eis-Turm', cost:500, icon:'❄️', color:'#00bfff',
-    range:100, fireRate:120, damage:0, projectileSpeed:0,
-    projectileColor:'#00bfff', projectileSize:0, pierce:999,
-    isFreeze:true, freezeDuration:60,
-    upgrades:[
-      {name:'Tiefkühlung', cost:350, desc:'Einfrierzeit +50%', apply:(t)=>{ t.freezeDuration*=1.5; }},
-      {name:'Mehr Reichweite', cost:280, desc:'Reichweite +25', apply:(t)=>{ t.range+=25; }},
-      {name:'Schaden beim Einfrieren', cost:600, desc:'+1 Schaden', apply:(t)=>{ t.damage=1; }},
-    ]
+    id: 'ice',
+    name: 'Eis-Turm',
+    cost: 500,
+    icon: '❄️',
+    color: '#00bfff',
+    range: 100, fireRate: 120, damage: 0,
+    projectileSpeed: 0, projectileColor: '#00bfff', projectileSize: 0,
+    pierce: 999, isFreeze: true, freezeDuration: 60,
+    upgrades: [
+      // Path 0 – Einfrierzeit
+      [
+        { name:'Tiefkühlung',    cost:200, desc:'Einfrierzeit +50%',  apply:t=>{ t.freezeDuration=Math.round(t.freezeDuration*1.5); } },
+        { name:'Permafrost',     cost:300, desc:'Einfrierzeit ×2',    apply:t=>{ t.freezeDuration*=2; } },
+        { name:'Arktischer Wind',cost:600, desc:'Alle in Reichweite eingefroren', apply:t=>{ t.arcticWind=true; } },
+        { name:'Absolute Zero',  cost:2500,desc:'Riesige Eiswelle',   apply:t=>{ t.absZero=true; t.range+=30; t.freezeDuration*=2; } },
+        { name:'Polar Vortex',   cost:6500,desc:'Schaden beim Einfrieren',apply:t=>{ t.damage=5; t.freezeDuration*=2; } },
+      ],
+      // Path 1 – Schaden beim Einfrieren
+      [
+        { name:'Ice-Schards',    cost:250, desc:'+1 Dmg',             apply:t=>{ t.damage=Math.max(1,t.damage); t.damage++; } },
+        { name:'Cryo-Cannon',    cost:400, desc:'+2 Dmg, Wasser',     apply:t=>{ t.damage+=2; } },
+        { name:'Snap Freeze',    cost:700, desc:'+3 Dmg, sofort',     apply:t=>{ t.damage+=3; t.fireRate=Math.ceil(t.fireRate*0.6); } },
+        { name:'Super Brittle',  cost:2000,desc:'+5 Dmg, alle schwächer', apply:t=>{ t.damage+=5; t.superBrittle=true; } },
+        { name:'Blizzard',       cost:6000,desc:'+10 Dmg, alles eingefroren', apply:t=>{ t.damage+=10; t.range+=50; } },
+      ],
+      // Path 2 – Reichweite/Feuerrate
+      [
+        { name:'Mehr Reichweite', cost:200, desc:'Reichweite +20',    apply:t=>{ t.range+=20; } },
+        { name:'Größere Zone',    cost:300, desc:'Reichweite +20',    apply:t=>{ t.range+=20; } },
+        { name:'Schnelle Eis',    cost:450, desc:'Feuerrate +40%',    apply:t=>{ t.fireRate=Math.ceil(t.fireRate*0.6); } },
+        { name:'Cryo-Ring',       cost:1500,desc:'Ring-Schuss 360°',  apply:t=>{ t.cryoRing=true; } },
+        { name:'Tundra',          cost:5000,desc:'Permanenter Frost',  apply:t=>{ t.tundra=true; t.range+=60; t.fireRate=30; } },
+      ],
+    ],
   },
   {
-    id:'glue', name:'Kleber', cost:275, icon:'🟡', color:'#a0a000',
-    range:110, fireRate:60, damage:0, projectileSpeed:8,
-    projectileColor:'#c8c800', projectileSize:6, pierce:1,
-    isGlue:true, slowFactor:0.4, slowDuration:180,
-    upgrades:[
-      {name:'Super-Kleber', cost:300, desc:'Verlangsamung stärker', apply:(t)=>{ t.slowFactor=0.2; }},
-      {name:'Kleber-Storm', cost:400, desc:'Pierce +5', apply:(t)=>{ t.pierce+=5; }},
-      {name:'Ätzender Kleber', cost:500, desc:'DOT-Schaden 1/s', apply:(t)=>{ t.glueDot=true; }},
-    ]
+    id: 'glue',
+    name: 'Kleber',
+    cost: 275,
+    icon: '🟡',
+    color: '#a0a000',
+    range: 110, fireRate: 60, damage: 0,
+    projectileSpeed: 8, projectileColor: '#c8c800', projectileSize: 6,
+    pierce: 1, isGlue: true, slowFactor: 0.4, slowDuration: 180,
+    upgrades: [
+      // Path 0 – Verlangsamung
+      [
+        { name:'Stärkerer Kleber', cost:200, desc:'Verlangsamung ×2', apply:t=>{ t.slowFactor=Math.max(0.05,t.slowFactor*0.5); } },
+        { name:'Super-Kleber',     cost:300, desc:'Verlangsamung ×2', apply:t=>{ t.slowFactor=Math.max(0.05,t.slowFactor*0.5); } },
+        { name:'Lösungsmittel',    cost:500, desc:'+1 DOT-Schaden/s', apply:t=>{ t.glueDot=true; t.glueDotDmg=1; } },
+        { name:'Ätzend',           cost:1500,desc:'+2 DOT-Schaden/s', apply:t=>{ t.glueDotDmg=2; } },
+        { name:'Kleber-Storm',     cost:5000,desc:'Alle Bloons Gebiet sofort verlangsamt', apply:t=>{ t.glueStorm=true; t.slowFactor=0.01; t.range+=40; } },
+      ],
+      // Path 1 – Pierce / Areal
+      [
+        { name:'Kleber-Sprüher',   cost:150, desc:'+3 Pierce',        apply:t=>{ t.pierce+=3; } },
+        { name:'Maxi-Kleber',      cost:250, desc:'+5 Pierce',        apply:t=>{ t.pierce+=5; } },
+        { name:'Kleber-Blitz',     cost:400, desc:'+10 Pierce',       apply:t=>{ t.pierce+=10; } },
+        { name:'MOAB-Kleber',      cost:1500,desc:'MOAB wird klebrig', apply:t=>{ t.glueMoab=true; t.slowFactor=Math.min(t.slowFactor,0.3); } },
+        { name:'Kleber-Kanone',    cost:4500,desc:'Riesige Kleberfläche', apply:t=>{ t.pierce=999; t.range+=30; t.blastRadius=60; t.isGlueExplosion=true; } },
+      ],
+      // Path 2 – Dauer / Schaden
+      [
+        { name:'Langlebiger Kleber', cost:180, desc:'Dauer +50%',     apply:t=>{ t.slowDuration=Math.round(t.slowDuration*1.5); } },
+        { name:'Extralang',          cost:250, desc:'Dauer ×2',       apply:t=>{ t.slowDuration*=2; } },
+        { name:'Infizierter Kleber', cost:500, desc:'+1 Dmg',         apply:t=>{ t.damage=1; } },
+        { name:'Tödlicher Kleber',   cost:1200,desc:'+2 Dmg',         apply:t=>{ t.damage+=2; } },
+        { name:'Biologische Waffe',  cost:4000,desc:'+5 Dmg, Kette',  apply:t=>{ t.damage+=5; t.chainGlue=true; } },
+      ],
+    ],
   },
 ];
 
-// ========== WAVES ==========
+// =====================================================================
+// WAVES
+// =====================================================================
 function makeWave(round) {
   const bloons = [];
   const r = round;
-  function add(type, count, interval=20) {
-    for(let i=0;i<count;i++) bloons.push({type, delay: i*interval});
+  function add(type, count, interval=20, offset=0) {
+    for(let i=0;i<count;i++) bloons.push({type, delay: offset+i*interval});
   }
-  if(r<=3) { add('red',5+r*5); }
-  else if(r<=6) { add('red',5+r*3); add('blue',r*3,25); }
-  else if(r<=10) { add('blue',r*4,20); add('green',r*2,35); }
-  else if(r<=14) { add('green',r*3,20); add('yellow',r*2,30); }
-  else if(r<=18) { add('yellow',r*2,22); add('pink',r*2,28); }
-  else if(r<=22) { add('pink',r*3,18); add('black',r,35); }
-  else if(r<=26) { add('black',r*2,20); add('ceramic',Math.floor(r/2),40); }
-  else if(r<=29) { add('ceramic',r,25); add('moab',Math.floor(r/7),100); }
-  else { add('moab',5,80); add('ceramic',20,15); }
-
-  // sort by delay
+  if(r<=2)       { add('red',8+r*4); }
+  else if(r<=4)  { add('red',10+r*3); add('blue',r*3,25,20); }
+  else if(r<=7)  { add('blue',r*5,20); add('green',r*2,30,30); }
+  else if(r<=10) { add('green',r*3,22); add('yellow',r*2,32,40); }
+  else if(r<=13) { add('yellow',r*3,20); add('pink',r*2,28,50); }
+  else if(r<=16) { add('pink',r*3,18); add('black',r,35); }
+  else if(r<=20) { add('black',r*2,20); add('pink',r,25,10); }
+  else if(r<=23) { add('ceramic',Math.floor(r*1.5),28); add('black',r,22,20); }
+  else if(r<=26) { add('ceramic',r*2,20); add('moab',Math.floor(r/6),90); }
+  else if(r<=29) { add('ceramic',r,22); add('moab',Math.floor(r/4),80); add('black',r/2,25,10); }
+  else           { add('moab',6,70); add('ceramic',25,14); add('pink',20,12,10); }
   bloons.sort((a,b)=>a.delay-b.delay);
   return bloons;
 }
 
-// ========== GAME STATE ==========
+// =====================================================================
+// GAME STATE
+// =====================================================================
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
 let state = {};
 function initState() {
   state = {
-    lives: 150,
-    money: 650,
-    round: 1,
-    maxRound: 30,
-    popped: 0,
-    towers: [],
-    bloons: [],
-    projectiles: [],
-    particles: [],
-    spawnQueue: [],
-    spawnTimer: 0,
-    waveActive: false,
-    gameOver: false,
-    victory: false,
-    speed: 1,
-    selectedTowerType: null,
-    selectedTower: null,
-    hoveredCell: null,
-    frame: 0,
-    towerGrid: new Set(),
+    lives: 150, money: 650, round: 1, maxRound: 30,
+    popped: 0, towers: [], bloons: [], projectiles: [], particles: [],
+    spawnQueue: [], spawnTimer: 0, waveActive: false,
+    gameOver: false, victory: false, speed: 1,
+    selectedTowerType: null, selectedTower: null, hoveredPos: null,
+    frame: 0, towerPositions: [],
   };
 }
 initState();
 
-// ========== PATH HELPERS ==========
-function pathLength() {
-  let len = 0;
-  for(let i=1;i<PATH.length;i++) {
-    const dx = PATH[i].x-PATH[i-1].x, dy = PATH[i].y-PATH[i-1].y;
-    len += Math.sqrt(dx*dx+dy*dy);
-  }
-  return len;
-}
-const TOTAL_PATH = pathLength();
-
+// =====================================================================
+// PATH HELPERS
+// =====================================================================
 function posOnPath(dist) {
   let rem = dist;
   for(let i=1;i<PATH.length;i++) {
-    const dx = PATH[i].x-PATH[i-1].x, dy = PATH[i].y-PATH[i-1].y;
-    const seg = Math.sqrt(dx*dx+dy*dy);
-    if(rem <= seg) {
-      const t = rem/seg;
-      return {x: PATH[i-1].x+dx*t, y: PATH[i-1].y+dy*t, done: false};
+    const dx=PATH[i].x-PATH[i-1].x, dy=PATH[i].y-PATH[i-1].y;
+    const seg=Math.sqrt(dx*dx+dy*dy);
+    if(rem<=seg) {
+      const t=rem/seg;
+      return {x:PATH[i-1].x+dx*t, y:PATH[i-1].y+dy*t, done:false};
     }
-    rem -= seg;
+    rem-=seg;
   }
-  return {x: PATH[PATH.length-1].x, y: PATH[PATH.length-1].y, done: true};
+  return {x:PATH[PATH.length-1].x, y:PATH[PATH.length-1].y, done:true};
 }
 
-function isOnPath(x, y, margin=18) {
+function isOnPath(x, y, margin=20) {
   for(let i=1;i<PATH.length;i++) {
     const ax=PATH[i-1].x, ay=PATH[i-1].y, bx=PATH[i].x, by=PATH[i].y;
     const dx=bx-ax, dy=by-ay, len2=dx*dx+dy*dy;
     const t=Math.max(0,Math.min(1,((x-ax)*dx+(y-ay)*dy)/len2));
     const px=ax+t*dx, py=ay+t*dy;
-    const dist=Math.sqrt((x-px)**2+(y-py)**2);
-    if(dist<margin) return true;
+    if(Math.sqrt((x-px)**2+(y-py)**2)<margin) return true;
   }
   return false;
 }
 
-// ========== BLOON ==========
+// =====================================================================
+// UPGRADE SYSTEM – BTD6 style
+// Rules:
+//   - Max 2 paths can be non-zero
+//   - At most one path can be at tier 3+
+//   - If one path is 3+, other paths can be at most 2
+// tower.upgrades = [p0level, p1level, p2level]
+// =====================================================================
+function canUpgradePath(tower, path) {
+  const levels = tower.upgrades;
+  const current = levels[path];
+  if(current >= 5) return false; // already maxed
+  const next = current + 1;
+
+  // Rule: only 2 paths can be non-zero
+  const nonZeroPaths = levels.filter(l=>l>0).length;
+  if(current === 0 && nonZeroPaths >= 2) return false;
+
+  // Rule: only one path can be at 3+
+  if(next >= 3) {
+    for(let i=0;i<3;i++) {
+      if(i!==path && levels[i]>=3) return false;
+    }
+  }
+  // Rule: if another path is at 3+, this path max 2
+  const otherHigh = levels.some((l,i)=>i!==path && l>=3);
+  if(otherHigh && next > 2) return false;
+
+  return true;
+}
+
+function upgradePathCost(tower, path) {
+  const def = TOWER_DEFS.find(d=>d.id===tower.typeId);
+  const level = tower.upgrades[path];
+  if(level>=5) return Infinity;
+  return def.upgrades[path][level].cost;
+}
+
+function applyUpgrade(tower, path) {
+  const def = TOWER_DEFS.find(d=>d.id===tower.typeId);
+  const level = tower.upgrades[path];
+  def.upgrades[path][level].apply(tower);
+  tower.upgrades[path]++;
+}
+
+// =====================================================================
+// BLOON
+// =====================================================================
 let bloonId=0;
 function spawnBloon(type) {
-  const bt = BLOON_TYPES[type];
+  const bt=BLOON_TYPES[type];
   return {
-    id: bloonId++,
-    type, hp: bt.hp, maxHp: bt.hp,
-    speed: bt.speed, dist: 0,
-    x: PATH[0].x, y: PATH[0].y,
-    frozen: 0, frozenTimer:0,
-    glued: 0, gluedTimer:0, glueDot:false, glueDotTimer:0,
+    id:bloonId++, type, hp:bt.hp, maxHp:bt.hp,
+    speed:bt.speed, dist:0, x:PATH[0].x, y:PATH[0].y,
+    frozenTimer:0, gluedTimer:0, slowFactor:1, glueDot:false, glueDotDmg:1,
   };
 }
 
-// ========== TOWER ==========
-let towerId=0;
-function createTower(type, x, y) {
-  const t = {...type, id:towerId++, x, y, angle:0, cooldown:0, upgrades:[]};
+// =====================================================================
+// TOWER
+// =====================================================================
+let towerUid=0;
+function createTower(def, x, y) {
+  // uid = unique instance ID, typeId = type string ('dart', etc.)
+  // We copy all def properties but keep typeId separate
+  const t = {
+    ...def,
+    uid: towerUid++,
+    typeId: def.id,   // keep the type string
+    x, y,
+    angle: 0,
+    cooldown: 0,
+    upgrades: [0, 0, 0],  // [path0_level, path1_level, path2_level]
+    supplyDrop: false,
+    moneyPerShot: 0,
+    totalSpent: def.cost,
+  };
   return t;
 }
 
-// ========== PROJECTILE ==========
+// =====================================================================
+// PROJECTILE
+// =====================================================================
 let projId=0;
-function createProjectile(tower, target, dx, dy) {
+function createProjectile(tower, tdx, tdy, targetId) {
   return {
-    id: projId++,
-    x: tower.x, y: tower.y,
-    dx, dy,
-    speed: tower.projectileSpeed,
-    damage: tower.damage,
-    pierce: tower.pierce,
-    hit: new Set(),
-    tower,
-    targetId: target ? target.id : null,
-    isExplosive: tower.isExplosive||false,
-    blastRadius: tower.blastRadius||0,
-    isGlue: tower.isGlue||false,
-    slowFactor: tower.slowFactor||1,
-    slowDuration: tower.slowDuration||0,
-    glueDot: tower.glueDot||false,
-    color: tower.projectileColor,
-    size: tower.projectileSize,
-    moabMauler: tower.moabMauler||false,
+    id:projId++,
+    x:tower.x, y:tower.y, dx:tdx, dy:tdy,
+    speed:tower.projectileSpeed,
+    damage:tower.damage,
+    pierce:tower.pierce,
+    hit:new Set(),
+    towerRef:tower,
+    targetId: targetId||null,
+    isExplosive:tower.isExplosive||false,
+    onHitExplode:tower.onHitExplode||false,
+    blastRadius:tower.blastRadius||0,
+    isGlue:tower.isGlue||false,
+    slowFactor:tower.slowFactor||1,
+    slowDuration:tower.slowDuration||0,
+    glueDot:tower.glueDot||false,
+    glueDotDmg:tower.glueDotDmg||1,
+    moabMauler:tower.moabMauler||false,
+    moabElim:tower.moabElim||false,
+    color:tower.projectileColor,
+    size:tower.projectileSize,
+    bouncing:tower.bouncing||0,
+    isLaser:tower.isLaser||false,
   };
 }
 
-// ========== PARTICLE ==========
+// =====================================================================
+// PARTICLES
+// =====================================================================
 function burst(x, y, color, count=8) {
   for(let i=0;i<count;i++) {
-    const angle = Math.random()*Math.PI*2;
-    const speed = 1+Math.random()*3;
-    state.particles.push({
-      x,y,
-      vx: Math.cos(angle)*speed,
-      vy: Math.sin(angle)*speed,
-      life: 30+Math.random()*20,
-      maxLife: 50,
-      color,
-      size: 2+Math.random()*3,
-    });
+    const a=Math.random()*Math.PI*2, s=1+Math.random()*3;
+    state.particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:30+Math.random()*20,maxLife:50,color,size:2+Math.random()*3});
   }
 }
 
-// ========== TOWER AI ==========
-function findTarget(tower) {
-  let best = null, bestDist = 0;
-  for(const b of state.bloons) {
-    if(b.frozen>0 && b.frozenTimer>0) continue;
-    const dx=b.x-tower.x, dy=b.y-tower.y;
-    const dist=Math.sqrt(dx*dx+dy*dy);
-    if(dist<=tower.range) {
-      if(b.dist>bestDist) { bestDist=b.dist; best=b; }
-    }
-  }
-  return best;
-}
-
-function shootTower(tower) {
-  if(tower.cooldown>0) { tower.cooldown--; return; }
-  if(tower.isFreeze) {
-    let hit=false;
-    for(const b of state.bloons) {
-      const dx=b.x-tower.x, dy=b.y-tower.y;
-      if(Math.sqrt(dx*dx+dy*dy)<=tower.range) {
-        if(b.type!=='moab') {
-          b.frozenTimer=Math.round(tower.freezeDuration);
-          b.frozen=1;
-        }
-        if(tower.damage>0) takeDamage(b, tower.damage);
-        hit=true;
-      }
-    }
-    if(hit) { tower.cooldown=tower.fireRate; burst(tower.x,tower.y,'#00bfff',5); }
-    else if(state.bloons.some(b=>{const d=Math.sqrt((b.x-tower.x)**2+(b.y-tower.y)**2);return d<=tower.range;})) {
-      tower.cooldown=tower.fireRate;
-    }
-    return;
-  }
-
-  const target = findTarget(tower);
-  if(!target) return;
-  tower.cooldown = tower.fireRate;
-
-  const dx=target.x-tower.x, dy=target.y-tower.y;
-  const len=Math.sqrt(dx*dx+dy*dy)||1;
-  tower.angle=Math.atan2(dy,dx);
-
-  if(tower.spreadShot) {
-    const n=tower.spreadShot;
-    for(let i=0;i<n;i++) {
-      const a=(i/n)*Math.PI*2;
-      state.projectiles.push(createProjectile(tower, null, Math.cos(a), Math.sin(a)));
-    }
-  } else if(tower.isSniper) {
-    state.projectiles.push(createProjectile(tower, target, dx/len, dy/len));
-  } else {
-    state.projectiles.push(createProjectile(tower, target, dx/len, dy/len));
-  }
-}
-
+// =====================================================================
+// DAMAGE
+// =====================================================================
 function takeDamage(bloon, dmg) {
-  bloon.hp -= dmg;
+  if(!bloon||bloon.dead) return;
+  bloon.hp-=dmg;
   if(bloon.hp<=0) killBloon(bloon);
 }
 
 function killBloon(bloon) {
-  const bt = BLOON_TYPES[bloon.type];
-  state.money += bt.reward;
+  const bt=BLOON_TYPES[bloon.type];
+  state.money+=bt.reward;
   state.popped++;
-  burst(bloon.x, bloon.y, bt.color, bloon.type==='moab'?20:8);
-  bloon.dead = true;
-  // spawn children for MOAB
+  burst(bloon.x,bloon.y,bt.color,bloon.type==='moab'?20:8);
+  bloon.dead=true;
   if(bloon.type==='moab') {
     for(let i=0;i<4;i++) {
       const b=spawnBloon('ceramic');
-      b.dist=bloon.dist; const p=posOnPath(b.dist);
-      b.x=p.x; b.y=p.y;
+      b.dist=bloon.dist;
+      const p=posOnPath(b.dist); b.x=p.x; b.y=p.y;
       state.bloons.push(b);
     }
   }
   updateUI();
 }
 
-// ========== UPDATE ==========
+// =====================================================================
+// TOWER AI
+// =====================================================================
+function findTarget(tower) {
+  let best=null, bestDist=-1;
+  for(const b of state.bloons) {
+    if(b.dead||b.frozenTimer>0) continue;
+    const dx=b.x-tower.x, dy=b.y-tower.y;
+    const d=Math.sqrt(dx*dx+dy*dy);
+    if(d<=tower.range && b.dist>bestDist) { bestDist=b.dist; best=b; }
+  }
+  return best;
+}
+
+function shootTower(tower) {
+  if(tower.cooldown>0) { tower.cooldown--; return; }
+
+  // ICE TOWER
+  if(tower.isFreeze) {
+    let anyInRange=false;
+    for(const b of state.bloons) {
+      if(b.dead) continue;
+      const dx=b.x-tower.x, dy=b.y-tower.y;
+      if(Math.sqrt(dx*dx+dy*dy)<=tower.range) {
+        anyInRange=true;
+        if(b.type!=='moab') {
+          b.frozenTimer=Math.round(tower.freezeDuration);
+        }
+        if(tower.damage>0) takeDamage(b,tower.damage);
+      }
+    }
+    if(anyInRange) { tower.cooldown=tower.fireRate; burst(tower.x,tower.y,'#00bfff',4); }
+    return;
+  }
+
+  const target=findTarget(tower);
+  if(!target) return;
+  tower.cooldown=tower.fireRate;
+
+  const dx=target.x-tower.x, dy=target.y-tower.y;
+  const len=Math.sqrt(dx*dx+dy*dy)||1;
+  tower.angle=Math.atan2(dy,dx);
+
+  if(tower.moneyPerShot) state.money+=tower.moneyPerShot;
+
+  if(tower.spreadShot) {
+    const n=tower.spreadShot;
+    for(let i=0;i<n;i++) {
+      const a=(i/n)*Math.PI*2;
+      state.projectiles.push(createProjectile(tower,Math.cos(a),Math.sin(a),target.id));
+    }
+  } else if(tower.tripleShot||tower.spreadTriple) {
+    for(let i=-1;i<=1;i++) {
+      const a=Math.atan2(dy,dx)+i*0.18;
+      state.projectiles.push(createProjectile(tower,Math.cos(a),Math.sin(a),target.id));
+    }
+  } else {
+    state.projectiles.push(createProjectile(tower,dx/len,dy/len,target.id));
+  }
+}
+
+// =====================================================================
+// PROJECTILE LOGIC
+// =====================================================================
+function explodeAt(proj, x, y) {
+  for(const b of state.bloons) {
+    if(b.dead||proj.hit.has(b.id)) continue;
+    const dx=b.x-x, dy=b.y-y;
+    if(Math.sqrt(dx*dx+dy*dy)<=proj.blastRadius) {
+      let dmg=proj.damage;
+      if(proj.moabMauler&&b.type==='moab') dmg*=10;
+      if(proj.moabElim&&b.type==='moab') dmg*=20;
+      takeDamage(b,dmg);
+      proj.hit.add(b.id);
+    }
+  }
+  burst(x,y,'#ff8800',10);
+}
+
+function updateProjectile(proj) {
+  if(proj.dead) return;
+  proj.x+=proj.dx*proj.speed;
+  proj.y+=proj.dy*proj.speed;
+  if(proj.x<-60||proj.x>760||proj.y<-60||proj.y>580) { proj.dead=true; return; }
+
+  if(proj.isExplosive && !proj.onHitExplode) {
+    // Seek target and explode on arrival
+    const target=state.bloons.find(b=>!b.dead&&b.id===proj.targetId);
+    if(!target) { proj.dead=true; return; }
+    const dx=proj.x-target.x, dy=proj.y-target.y;
+    if(Math.sqrt(dx*dx+dy*dy)<target.size+proj.size/2) {
+      explodeAt(proj,proj.x,proj.y);
+      proj.dead=true;
+    }
+    return;
+  }
+
+  // Hit detection
+  for(const b of state.bloons) {
+    if(b.dead||proj.hit.has(b.id)) continue;
+    const bt=BLOON_TYPES[b.type];
+    const dx=b.x-proj.x, dy=b.y-proj.y;
+    if(Math.sqrt(dx*dx+dy*dy)<=bt.size+proj.size/2) {
+      proj.hit.add(b.id);
+
+      if(proj.isGlue) {
+        b.gluedTimer=proj.slowDuration;
+        b.slowFactor=proj.slowFactor;
+        if(proj.glueDot) { b.glueDot=true; b.glueDotDmg=proj.glueDotDmg; }
+        if(proj.damage>0) takeDamage(b,proj.damage);
+      } else if(proj.onHitExplode) {
+        let dmg=proj.damage;
+        if(proj.moabMauler&&b.type==='moab') dmg*=10;
+        takeDamage(b,dmg);
+        explodeAt(proj,proj.x,proj.y);
+      } else {
+        let dmg=proj.damage;
+        if(proj.moabMauler&&b.type==='moab') dmg*=10;
+        if(proj.moabElim&&b.type==='moab') dmg*=20;
+        takeDamage(b,dmg);
+      }
+      proj.pierce--;
+      if(proj.pierce<=0) { proj.dead=true; return; }
+    }
+  }
+}
+
+// =====================================================================
+// UPDATE
+// =====================================================================
 function update() {
   if(state.gameOver||state.victory) return;
   state.frame++;
 
-  // spawn
+  // Spawn
   if(state.waveActive && state.spawnQueue.length>0) {
     state.spawnTimer++;
-    while(state.spawnQueue.length>0 && state.spawnQueue[0].delay<=state.spawnTimer) {
-      const item=state.spawnQueue.shift();
-      state.bloons.push(spawnBloon(item.type));
-    }
+    while(state.spawnQueue.length>0 && state.spawnQueue[0].delay<=state.spawnTimer)
+      state.bloons.push(spawnBloon(state.spawnQueue.shift().type));
   }
 
-  // bloons
+  // Move bloons
   for(const b of state.bloons) {
     if(b.dead) continue;
-    if(b.frozenTimer>0) { b.frozenTimer--; if(b.frozenTimer<=0) b.frozen=0; continue; }
-    if(b.gluedTimer>0) { b.gluedTimer--; if(b.gluedTimer<=0) b.glued=0; }
-    if(b.glueDot && b.glued>0 && state.frame%60===0) takeDamage(b, 1);
-    const spd = b.speed * (b.glued>0 ? b.slowFactor : 1);
-    b.dist += spd;
+    if(b.frozenTimer>0) { b.frozenTimer--; continue; }
+    if(b.gluedTimer>0) b.gluedTimer--;
+    else b.slowFactor=1;
+
+    if(b.glueDot && b.gluedTimer>0 && state.frame%60===0)
+      takeDamage(b, b.glueDotDmg||1);
+
+    const spd=b.speed*(b.gluedTimer>0 ? b.slowFactor : 1);
+    b.dist+=spd;
     const p=posOnPath(b.dist);
     b.x=p.x; b.y=p.y;
     if(p.done) {
-      state.lives -= BLOON_TYPES[b.type].hp;
+      state.lives-=BLOON_TYPES[b.type].hp;
       burst(b.x,b.y,'#ff0000',5);
       b.dead=true;
-      if(state.lives<=0) { state.lives=0; endGame(false); }
+      if(state.lives<=0) { state.lives=0; endGame(false); return; }
       updateUI();
     }
   }
   state.bloons=state.bloons.filter(b=>!b.dead);
 
-  // towers
+  // Towers shoot
   for(const t of state.towers) shootTower(t);
 
-  // projectiles
-  for(const p of state.projectiles) {
-    if(p.dead) continue;
-    p.x+=p.dx*p.speed;
-    p.y+=p.dy*p.speed;
-
-    if(p.x<-50||p.x>750||p.y<-50||p.y>570) { p.dead=true; continue; }
-
-    if(p.isExplosive) {
-      const target=state.bloons.find(b=>!b.dead&&b.id===p.targetId);
-      if(target) {
-        const dx=p.x-target.x, dy=p.y-target.y;
-        if(Math.sqrt(dx*dx+dy*dy)<target.size||!state.bloons.find(b=>b.id===p.targetId)) {
-          // explode
-          for(const b of state.bloons) {
-            if(b.dead) continue;
-            const dx2=b.x-p.x,dy2=b.y-p.y;
-            if(Math.sqrt(dx2*dx2+dy2*dy2)<=p.blastRadius) {
-              let dmg=p.damage;
-              if(p.moabMauler&&b.type==='moab') dmg*=10;
-              takeDamage(b,dmg);
-            }
-          }
-          burst(p.x,p.y,'#ff8800',12);
-          p.dead=true;
-        }
-      } else { p.dead=true; }
-      continue;
-    }
-
-    if(p.isGlue) {
-      for(const b of state.bloons) {
-        if(b.dead||p.hit.has(b.id)) continue;
-        const dx=b.x-p.x, dy=b.y-p.y;
-        if(Math.sqrt(dx*dx+dy*dy)<=b.size) {
-          b.glued=1; b.gluedTimer=p.slowDuration;
-          b.slowFactor=p.slowFactor;
-          if(p.glueDot) b.glueDot=true;
-          if(p.damage>0) takeDamage(b,p.damage);
-          p.hit.add(b.id);
-          p.pierce--;
-          if(p.pierce<=0) { p.dead=true; break; }
-        }
-      }
-      continue;
-    }
-
-    for(const b of state.bloons) {
-      if(b.dead||p.hit.has(b.id)) continue;
-      const dx=b.x-p.x, dy=b.y-p.y;
-      const bt=BLOON_TYPES[b.type];
-      if(Math.sqrt(dx*dx+dy*dy)<=bt.size+p.size/2) {
-        takeDamage(b,p.damage);
-        p.hit.add(b.id);
-        p.pierce--;
-        if(p.pierce<=0) { p.dead=true; break; }
-      }
-    }
-  }
+  // Move projectiles
+  for(const p of state.projectiles) updateProjectile(p);
   state.projectiles=state.projectiles.filter(p=>!p.dead);
 
-  // particles
-  for(const p of state.particles) {
-    p.x+=p.vx; p.y+=p.vy;
-    p.vx*=0.9; p.vy*=0.9;
-    p.life--;
-  }
+  // Particles
+  for(const p of state.particles) { p.x+=p.vx; p.y+=p.vy; p.vx*=0.9; p.vy*=0.9; p.life--; }
   state.particles=state.particles.filter(p=>p.life>0);
 
-  // wave done?
+  // Wave done?
   if(state.waveActive && state.spawnQueue.length===0 && state.bloons.length===0) {
     state.waveActive=false;
     if(state.round>=state.maxRound) { endGame(true); return; }
+    // Supply drop towers
+    for(const t of state.towers) {
+      if(t.supplyDrop) state.money+=500;
+    }
     state.round++;
     state.money+=100+state.round*10;
     updateUI();
@@ -675,138 +877,85 @@ function update() {
   }
 }
 
-// ========== DRAW ==========
-function drawPath() {
-  // grass bg
+// =====================================================================
+// DRAW
+// =====================================================================
+function drawScene() {
+  // grass
   ctx.fillStyle='#3a7d44';
   ctx.fillRect(0,0,700,520);
 
-  // dirt path
-  ctx.strokeStyle='#c8a46e';
-  ctx.lineWidth=32;
-  ctx.lineCap='round';
-  ctx.lineJoin='round';
-  ctx.beginPath();
-  ctx.moveTo(PATH[0].x, PATH[0].y);
+  // path dirt (outline)
+  ctx.strokeStyle='#b8944e'; ctx.lineWidth=36;
+  ctx.lineCap='round'; ctx.lineJoin='round';
+  ctx.beginPath(); ctx.moveTo(PATH[0].x,PATH[0].y);
   for(let i=1;i<PATH.length;i++) ctx.lineTo(PATH[i].x,PATH[i].y);
   ctx.stroke();
-
-  // path edges
-  ctx.strokeStyle='#b8944e';
-  ctx.lineWidth=36;
-  ctx.setLineDash([8,8]);
-  ctx.beginPath();
-  ctx.moveTo(PATH[0].x, PATH[0].y);
+  // path dirt (inner)
+  ctx.strokeStyle='#c8a46e'; ctx.lineWidth=30;
+  ctx.beginPath(); ctx.moveTo(PATH[0].x,PATH[0].y);
   for(let i=1;i<PATH.length;i++) ctx.lineTo(PATH[i].x,PATH[i].y);
   ctx.stroke();
-  ctx.setLineDash([]);
-
-  // redraw dirt on top
-  ctx.strokeStyle='#c8a46e';
-  ctx.lineWidth=30;
-  ctx.lineCap='round';
-  ctx.lineJoin='round';
-  ctx.beginPath();
-  ctx.moveTo(PATH[0].x, PATH[0].y);
-  for(let i=1;i<PATH.length;i++) ctx.lineTo(PATH[i].x,PATH[i].y);
-  ctx.stroke();
-
-  // arrows
-  ctx.strokeStyle='rgba(255,255,255,0.25)';
-  ctx.lineWidth=2;
+  // dashed guide
+  ctx.strokeStyle='rgba(255,255,255,0.18)'; ctx.lineWidth=2;
   ctx.setLineDash([12,8]);
-  ctx.beginPath();
-  ctx.moveTo(PATH[0].x, PATH[0].y);
+  ctx.beginPath(); ctx.moveTo(PATH[0].x,PATH[0].y);
   for(let i=1;i<PATH.length;i++) ctx.lineTo(PATH[i].x,PATH[i].y);
-  ctx.stroke();
-  ctx.setLineDash([]);
+  ctx.stroke(); ctx.setLineDash([]);
 
-  // start/end
-  ctx.fillStyle='#27ae60';
-  ctx.beginPath(); ctx.arc(PATH[0].x,PATH[0].y,12,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle='#fff';
-  ctx.font='bold 9px Arial'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  // start/end markers
+  ctx.fillStyle='#27ae60'; ctx.beginPath(); ctx.arc(PATH[0].x,PATH[0].y,12,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#fff'; ctx.font='bold 8px Arial'; ctx.textAlign='center'; ctx.textBaseline='middle';
   ctx.fillText('IN',PATH[0].x,PATH[0].y);
-
-  ctx.fillStyle='#e74c3c';
-  ctx.beginPath(); ctx.arc(PATH[PATH.length-1].x,PATH[PATH.length-1].y,12,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle='#fff';
-  ctx.fillText('OUT',PATH[PATH.length-1].x,PATH[PATH.length-1].y);
+  ctx.fillStyle='#e74c3c'; ctx.beginPath(); ctx.arc(PATH[PATH.length-1].x,PATH[PATH.length-1].y,12,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#fff'; ctx.fillText('OUT',PATH[PATH.length-1].x,PATH[PATH.length-1].y);
 }
 
 function drawTowerPreview() {
-  if(!state.selectedTowerType||!state.hoveredCell) return;
-  const {x,y}=state.hoveredCell;
-  const valid=!isOnPath(x,y)&&!state.towerGrid.has(`${Math.round(x/20)},${Math.round(y/20)}`);
+  if(!state.selectedTowerType||!state.hoveredPos) return;
+  const {x,y}=state.hoveredPos;
   const tt=state.selectedTowerType;
-  // range
-  ctx.beginPath();
-  ctx.arc(x,y,tt.range,0,Math.PI*2);
-  ctx.fillStyle=valid?'rgba(255,255,255,0.07)':'rgba(255,0,0,0.07)';
-  ctx.fill();
-  ctx.strokeStyle=valid?'rgba(255,255,255,0.35)':'rgba(255,0,0,0.35)';
-  ctx.lineWidth=1;
-  ctx.stroke();
-
+  const occupied=state.towers.some(t=>Math.sqrt((t.x-x)**2+(t.y-y)**2)<25);
+  const valid=!isOnPath(x,y)&&!occupied;
+  ctx.beginPath(); ctx.arc(x,y,tt.range,0,Math.PI*2);
+  ctx.fillStyle=valid?'rgba(255,255,255,0.06)':'rgba(255,0,0,0.06)'; ctx.fill();
+  ctx.strokeStyle=valid?'rgba(255,255,255,0.3)':'rgba(255,0,0,0.3)'; ctx.lineWidth=1; ctx.stroke();
   ctx.globalAlpha=valid?0.7:0.3;
-  ctx.fillStyle=tt.color;
-  ctx.beginPath(); ctx.arc(x,y,16,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle=tt.color; ctx.beginPath(); ctx.arc(x,y,16,0,Math.PI*2); ctx.fill();
   ctx.globalAlpha=1;
 }
 
 function drawTowers() {
   for(const t of state.towers) {
-    // range when selected
     if(state.selectedTower===t) {
-      ctx.beginPath();
-      ctx.arc(t.x,t.y,t.range,0,Math.PI*2);
-      ctx.fillStyle='rgba(255,255,255,0.07)';
-      ctx.fill();
-      ctx.strokeStyle='rgba(255,255,255,0.4)';
-      ctx.lineWidth=1.5;
-      ctx.stroke();
+      ctx.beginPath(); ctx.arc(t.x,t.y,t.range,0,Math.PI*2);
+      ctx.fillStyle='rgba(255,255,255,0.06)'; ctx.fill();
+      ctx.strokeStyle='rgba(255,255,255,0.4)'; ctx.lineWidth=1.5; ctx.stroke();
     }
-
-    ctx.save();
-    ctx.translate(t.x,t.y);
-    ctx.rotate(t.angle);
-
-    // base
-    ctx.fillStyle=t.color;
-    ctx.beginPath(); ctx.arc(0,0,17,0,Math.PI*2); ctx.fill();
-
-    // border
-    ctx.strokeStyle=state.selectedTower===t?'#f0e040':'rgba(255,255,255,0.4)';
-    ctx.lineWidth=state.selectedTower===t?3:1.5;
-    ctx.stroke();
-
-    // barrel
+    ctx.save(); ctx.translate(t.x,t.y); ctx.rotate(t.angle);
+    ctx.fillStyle=t.color; ctx.beginPath(); ctx.arc(0,0,17,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle=state.selectedTower===t?'#f0e040':'rgba(255,255,255,0.35)';
+    ctx.lineWidth=state.selectedTower===t?3:1.5; ctx.stroke();
     if(t.isFreeze) {
-      ctx.fillStyle='#00bfff';
-      ctx.beginPath(); ctx.arc(0,0,12,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='#00bfff'; ctx.beginPath(); ctx.arc(0,0,11,0,Math.PI*2); ctx.fill();
     } else if(t.isGlue) {
-      ctx.fillStyle='#c8c800';
-      ctx.beginPath(); ctx.arc(0,0,11,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='#c8c800'; ctx.beginPath(); ctx.arc(0,0,10,0,Math.PI*2); ctx.fill();
     } else {
-      ctx.fillStyle=t.color==='#555'?'#444':'rgba(0,0,0,0.4)';
-      ctx.fillRect(5,-4,18,8);
-      ctx.strokeStyle='rgba(0,0,0,0.3)';
-      ctx.lineWidth=1;
-      ctx.strokeRect(5,-4,18,8);
+      ctx.fillStyle='rgba(0,0,0,0.35)'; ctx.fillRect(5,-4,18,8);
     }
-
     ctx.restore();
-
-    // icon
-    ctx.font='12px Arial';
-    ctx.textAlign='center';
-    ctx.textBaseline='middle';
+    ctx.font='12px Arial'; ctx.textAlign='center'; ctx.textBaseline='middle';
     ctx.fillText(t.icon,t.x,t.y);
-
-    // upgrade dots
-    for(let i=0;i<t.upgrades.length;i++) {
-      ctx.fillStyle='#f0e040';
-      ctx.beginPath(); ctx.arc(t.x-10+i*10,t.y+20,3,0,Math.PI*2); ctx.fill();
+    // upgrade dots (3 paths)
+    const colors=['#f0e040','#e74c3c','#9b59b6'];
+    for(let p=0;p<3;p++) {
+      for(let l=0;l<t.upgrades[p];l++) {
+        ctx.fillStyle=colors[p];
+        ctx.beginPath(); ctx.arc(t.x-9+p*9,t.y+21,2.5,0,Math.PI*2); ctx.fill();
+        // small dots per level
+        ctx.fillStyle='rgba(255,255,255,0.5)';
+        ctx.beginPath(); ctx.arc(t.x-9+p*9+4,t.y+21,1.5,0,Math.PI*2); ctx.fill();
+      }
     }
   }
 }
@@ -815,54 +964,31 @@ function drawBloons() {
   for(const b of state.bloons) {
     if(b.dead) continue;
     const bt=BLOON_TYPES[b.type];
-    ctx.save();
-    ctx.translate(b.x,b.y);
-
-    // shadow
-    ctx.fillStyle='rgba(0,0,0,0.2)';
-    ctx.beginPath(); ctx.ellipse(2,4,bt.size*0.8,bt.size*0.4,0,0,Math.PI*2); ctx.fill();
-
-    // frozen overlay
-    if(b.frozenTimer>0) {
-      ctx.fillStyle='#b0e8ff';
-      ctx.beginPath(); ctx.arc(0,0,bt.size+2,0,Math.PI*2); ctx.fill();
-    }
-
-    // body
-    ctx.fillStyle=bt.color;
-    ctx.beginPath(); ctx.arc(0,0,bt.size,0,Math.PI*2); ctx.fill();
-
-    // glue overlay
-    if(b.gluedTimer>0) {
-      ctx.fillStyle='rgba(200,200,0,0.45)';
-      ctx.beginPath(); ctx.arc(0,0,bt.size,0,Math.PI*2); ctx.fill();
-    }
-
-    // border
-    ctx.strokeStyle=bt.border||'rgba(255,255,255,0.5)';
-    ctx.lineWidth=bt.borderW||1;
-    ctx.stroke();
-
-    // shine
-    ctx.fillStyle='rgba(255,255,255,0.35)';
-    ctx.beginPath(); ctx.arc(-bt.size*0.3,-bt.size*0.35,bt.size*0.35,0,Math.PI*2); ctx.fill();
-
-    // HP bar for tough bloons
+    ctx.save(); ctx.translate(b.x,b.y);
+    ctx.fillStyle='rgba(0,0,0,0.2)'; ctx.beginPath(); ctx.ellipse(2,4,bt.size*0.8,bt.size*0.4,0,0,Math.PI*2); ctx.fill();
+    if(b.frozenTimer>0) { ctx.fillStyle='#b0e8ff'; ctx.beginPath(); ctx.arc(0,0,bt.size+2,0,Math.PI*2); ctx.fill(); }
+    ctx.fillStyle=bt.color; ctx.beginPath(); ctx.arc(0,0,bt.size,0,Math.PI*2); ctx.fill();
+    if(b.gluedTimer>0) { ctx.fillStyle='rgba(200,200,0,0.4)'; ctx.beginPath(); ctx.arc(0,0,bt.size,0,Math.PI*2); ctx.fill(); }
+    ctx.strokeStyle=bt.border||'rgba(255,255,255,0.5)'; ctx.lineWidth=bt.borderW||1; ctx.stroke();
+    ctx.fillStyle='rgba(255,255,255,0.32)'; ctx.beginPath(); ctx.arc(-bt.size*0.3,-bt.size*0.35,bt.size*0.32,0,Math.PI*2); ctx.fill();
     if(bt.hp>5) {
-      ctx.fillStyle='rgba(0,0,0,0.5)';
-      ctx.fillRect(-bt.size,-bt.size-6,bt.size*2,4);
+      ctx.fillStyle='rgba(0,0,0,0.5)'; ctx.fillRect(-bt.size,-bt.size-6,bt.size*2,4);
       ctx.fillStyle=b.hp/bt.hp>0.5?'#27ae60':'#e74c3c';
       ctx.fillRect(-bt.size,-bt.size-6,bt.size*2*(b.hp/bt.hp),4);
     }
-
     ctx.restore();
   }
 }
 
 function drawProjectiles() {
   for(const p of state.projectiles) {
-    ctx.fillStyle=p.color;
-    ctx.beginPath(); ctx.arc(p.x,p.y,p.size/2,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle=p.color||'#fff';
+    if(p.isLaser) {
+      ctx.strokeStyle=p.color; ctx.lineWidth=2;
+      ctx.beginPath(); ctx.arc(p.x,p.y,3,0,Math.PI*2); ctx.fill();
+    } else {
+      ctx.beginPath(); ctx.arc(p.x,p.y,Math.max(1,p.size/2),0,Math.PI*2); ctx.fill();
+    }
   }
 }
 
@@ -877,7 +1003,7 @@ function drawParticles() {
 
 function draw() {
   ctx.clearRect(0,0,700,520);
-  drawPath();
+  drawScene();
   drawTowerPreview();
   drawTowers();
   drawBloons();
@@ -885,148 +1011,172 @@ function draw() {
   drawParticles();
 }
 
-// ========== UI ==========
+// =====================================================================
+// UI
+// =====================================================================
+function getTowerTotalSpent(tower) {
+  let v = TOWER_DEFS.find(d=>d.id===tower.typeId).cost;
+  const def = TOWER_DEFS.find(d=>d.id===tower.typeId);
+  for(let path=0;path<3;path++) {
+    for(let tier=0;tier<tower.upgrades[path];tier++) {
+      v+=def.upgrades[path][tier].cost;
+    }
+  }
+  return v;
+}
+
 function updateUI() {
   document.getElementById('stat-lives').textContent=Math.max(0,state.lives);
   document.getElementById('stat-money').textContent='$'+state.money;
   document.getElementById('stat-round').textContent=state.round+' / '+state.maxRound;
   document.getElementById('stat-popped').textContent=state.popped;
 
-  // update btn affordability
   document.querySelectorAll('.tower-btn').forEach(btn=>{
     const cost=parseInt(btn.dataset.cost);
-    if(state.money<cost) btn.classList.add('too-expensive');
-    else btn.classList.remove('too-expensive');
-    if(state.selectedTowerType && state.selectedTowerType.id===btn.dataset.id) btn.classList.add('selected');
-    else btn.classList.remove('selected');
+    btn.classList.toggle('too-expensive', state.money<cost);
+    btn.classList.toggle('selected', state.selectedTowerType && state.selectedTowerType.id===btn.dataset.id);
   });
 
-  if(state.selectedTower) {
-    document.getElementById('upgrade-panel').style.display='block';
-    document.getElementById('upgrade-title').textContent=state.selectedTower.name+' (Lvl '+(state.selectedTower.upgrades.length+1)+')';
-    const slots=document.getElementById('upgrade-slots');
-    slots.innerHTML='';
-    state.selectedTower.tower_upgrades_def = TOWER_TYPES.find(t=>t.id===state.selectedTower.id).upgrades;
-    const upgDefs=TOWER_TYPES.find(t=>t.id===state.selectedTower.id).upgrades;
-    upgDefs.forEach((u,i)=>{
-      const done=state.selectedTower.upgrades.includes(i);
-      const btn=document.createElement('button');
-      btn.className='upgrade-btn';
-      btn.disabled=done||state.money<u.cost||state.selectedTower.upgrades.length>=3;
-      btn.textContent=(done?'✓ ':'')+(done?u.name:u.name+' ($'+u.cost+')');
-      btn.title=u.desc;
-      if(!done) btn.onclick=()=>buyUpgrade(i);
-      slots.appendChild(btn);
-    });
-    const sellVal=Math.round(getTowerValue(state.selectedTower)*0.7);
-    document.getElementById('sell-btn').textContent='Verkaufen ($'+sellVal+')';
-    document.getElementById('sell-btn').onclick=sellTower;
-  } else {
-    document.getElementById('upgrade-panel').style.display='none';
-  }
-}
+  const panel=document.getElementById('upgrade-panel');
+  if(!state.selectedTower) { panel.style.display='none'; return; }
 
-function getTowerValue(tower) {
-  let val=TOWER_TYPES.find(t=>t.id===tower.id).cost;
-  const upgDefs=TOWER_TYPES.find(t=>t.id===tower.id).upgrades;
-  tower.upgrades.forEach(i=>val+=upgDefs[i].cost);
-  return val;
-}
-
-function buyUpgrade(idx) {
+  panel.style.display='block';
   const t=state.selectedTower;
-  const upgDefs=TOWER_TYPES.find(tt=>tt.id===t.id).upgrades;
-  const u=upgDefs[idx];
-  if(state.money<u.cost||t.upgrades.includes(idx)) return;
-  state.money-=u.cost;
-  u.apply(t);
-  t.upgrades.push(idx);
-  updateUI();
+  const def=TOWER_DEFS.find(d=>d.id===t.typeId);
+  const pathLabels=[' Pfad 1',' Pfad 2',' Pfad 3'];
+  const pathColors=['#f0e040','#e74c3c','#9b59b6'];
+
+  document.getElementById('upgrade-title').textContent=`${t.name}  [${t.upgrades.join('-')}]`;
+
+  const pathsDiv=document.getElementById('upgrade-paths');
+  pathsDiv.innerHTML='';
+
+  for(let path=0;path<3;path++) {
+    const curLevel=t.upgrades[path];
+    const pathDiv=document.createElement('div');
+    pathDiv.className='upgrade-path';
+
+    // Header with pips
+    const header=document.createElement('div');
+    header.className='path-header';
+    const nameSpan=document.createElement('span');
+    nameSpan.className='path-name';
+    nameSpan.style.color=pathColors[path];
+    nameSpan.textContent=pathLabels[path];
+    header.appendChild(nameSpan);
+
+    const pips=document.createElement('div');
+    pips.className='path-pips';
+    for(let i=0;i<5;i++) {
+      const pip=document.createElement('div');
+      pip.className='pip'+(i<curLevel?' filled'+(i>=4?' t5':i>=3?' t4':i>=2?' t3':''):'');
+      pips.appendChild(pip);
+    }
+    header.appendChild(pips);
+    pathDiv.appendChild(header);
+
+    // Tier buttons
+    for(let tier=0;tier<5;tier++) {
+      const upgDef=def.upgrades[path][tier];
+      const done=curLevel>tier;
+      const isNext=curLevel===tier;
+      const canAfford=state.money>=upgDef.cost;
+      const canDo=canUpgradePath(t,path);
+
+      const btn=document.createElement('button');
+      const tierClass=tier>=4?'t5':tier>=3?'t4':tier>=2?'t3':'';
+      btn.className='upgrade-tier-btn'+(done?' done':tierClass?' '+tierClass:'');
+      btn.disabled=done||!isNext||!canDo||!canAfford;
+
+      const costSpan=done?'✓':(!canDo&&isNext?'🔒':('$'+upgDef.cost));
+      btn.innerHTML=`<span>${tier+1}. ${upgDef.name}</span><span class="tier-cost">${costSpan}</span>`;
+      btn.title=upgDef.desc;
+
+      if(isNext&&canDo&&canAfford) {
+        btn.onclick=()=>{
+          state.money-=upgDef.cost;
+          applyUpgrade(t,path);
+          updateUI();
+        };
+      }
+      pathDiv.appendChild(btn);
+    }
+    pathsDiv.appendChild(pathDiv);
+  }
+
+  const sellVal=Math.round(getTowerTotalSpent(t)*0.7);
+  document.getElementById('sell-btn').textContent=`Verkaufen ($${sellVal})`;
+  document.getElementById('sell-btn').onclick=()=>{
+    state.money+=sellVal;
+    state.towers=state.towers.filter(tt=>tt!==t);
+    state.selectedTower=null;
+    updateUI();
+  };
 }
 
-function sellTower() {
-  if(!state.selectedTower) return;
-  const val=Math.round(getTowerValue(state.selectedTower)*0.7);
-  state.money+=val;
-  const key=getTowerGridKey(state.selectedTower);
-  state.towerGrid.delete(key);
-  state.towers=state.towers.filter(t=>t!==state.selectedTower);
-  state.selectedTower=null;
-  updateUI();
-}
-
-function getTowerGridKey(t) {
-  return `${Math.round(t.x/20)},${Math.round(t.y/20)}`;
-}
-
-// ========== TOWER BUTTONS ==========
+// =====================================================================
+// TOWER BUTTONS
+// =====================================================================
 function buildTowerButtons() {
   const container=document.getElementById('tower-buttons');
   container.innerHTML='';
-  TOWER_TYPES.forEach(tt=>{
+  TOWER_DEFS.forEach(def=>{
     const btn=document.createElement('button');
     btn.className='tower-btn';
-    btn.dataset.id=tt.id;
-    btn.dataset.cost=tt.cost;
-    btn.innerHTML=`<div class="tower-icon" style="background:${tt.color}">${tt.icon}</div>
-      <div class="tower-info">
-        <div class="tower-name">${tt.name}</div>
-        <div class="tower-cost">$${tt.cost}</div>
-      </div>`;
+    btn.dataset.id=def.id;
+    btn.dataset.cost=def.cost;
+    btn.innerHTML=`<div class="tower-icon" style="background:${def.color}">${def.icon}</div>
+      <div class="tower-info"><div class="tower-name">${def.name}</div><div class="tower-cost">$${def.cost}</div></div>`;
     btn.onclick=()=>{
-      if(state.money<tt.cost) return;
-      if(state.selectedTowerType===tt) { state.selectedTowerType=null; state.selectedTower=null; }
-      else { state.selectedTowerType=tt; state.selectedTower=null; }
+      if(state.money<def.cost) return;
+      state.selectedTowerType = (state.selectedTowerType===def) ? null : def;
+      state.selectedTower=null;
       updateUI();
     };
     container.appendChild(btn);
   });
 }
 
-// ========== CANVAS EVENTS ==========
+// =====================================================================
+// CANVAS EVENTS
+// =====================================================================
 canvas.addEventListener('mousemove',e=>{
-  const rect=canvas.getBoundingClientRect();
-  const x=e.clientX-rect.left, y=e.clientY-rect.top;
-  state.hoveredCell={x,y};
+  const r=canvas.getBoundingClientRect();
+  state.hoveredPos={x:e.clientX-r.left, y:e.clientY-r.top};
 });
-
-canvas.addEventListener('mouseleave',()=>{ state.hoveredCell=null; });
+canvas.addEventListener('mouseleave',()=>{ state.hoveredPos=null; });
 
 canvas.addEventListener('click',e=>{
-  const rect=canvas.getBoundingClientRect();
-  const x=e.clientX-rect.left, y=e.clientY-rect.top;
+  const r=canvas.getBoundingClientRect();
+  const x=e.clientX-r.left, y=e.clientY-r.top;
 
   if(state.selectedTowerType) {
-    const tt=state.selectedTowerType;
-    if(state.money<tt.cost) return;
+    const def=state.selectedTowerType;
+    if(state.money<def.cost) return;
     if(isOnPath(x,y)) return;
-    const key=`${Math.round(x/20)},${Math.round(y/20)}`;
-    if(state.towerGrid.has(key)) return;
-    state.money-=tt.cost;
-    const tower=createTower(tt,x,y);
-    state.towers.push(tower);
-    state.towerGrid.add(key);
+    if(state.towers.some(t=>Math.sqrt((t.x-x)**2+(t.y-y)**2)<25)) return;
+    state.money-=def.cost;
+    state.towers.push(createTower(def,x,y));
     state.selectedTowerType=null;
     updateUI();
-  } else {
-    // select tower
-    let found=null;
-    for(const t of state.towers) {
-      if(Math.sqrt((t.x-x)**2+(t.y-y)**2)<18) { found=t; break; }
-    }
-    state.selectedTower=found;
-    updateUI();
+    return;
   }
+
+  // Select tower by clicking on it
+  const found=state.towers.find(t=>Math.sqrt((t.x-x)**2+(t.y-y)**2)<18);
+  state.selectedTower = (found && state.selectedTower===found) ? null : (found||null);
+  updateUI();
 });
 
-// ========== BUTTONS ==========
+// =====================================================================
+// BUTTONS
+// =====================================================================
 document.getElementById('start-btn').onclick=()=>{
   if(state.waveActive||state.gameOver||state.victory) return;
   state.waveActive=true;
   state.spawnQueue=makeWave(state.round);
   state.spawnTimer=0;
   document.getElementById('start-btn').disabled=true;
-  updateUI();
 };
 
 document.getElementById('speed-btn').onclick=()=>{
@@ -1034,12 +1184,11 @@ document.getElementById('speed-btn').onclick=()=>{
   document.getElementById('speed-btn').textContent=state.speed===2?'⏩ 1x Geschwindigkeit':'⏩ 2x Geschwindigkeit';
 };
 
-// ========== GAME LOOP ==========
-let lastTime=0;
-function gameLoop(ts) {
-  const dt=ts-lastTime; lastTime=ts;
-  const steps=state.speed;
-  for(let i=0;i<steps;i++) update();
+// =====================================================================
+// GAME LOOP
+// =====================================================================
+function gameLoop() {
+  for(let i=0;i<state.speed;i++) update();
   draw();
   requestAnimationFrame(gameLoop);
 }
@@ -1049,8 +1198,8 @@ function endGame(win) {
   const msg=document.getElementById('message');
   document.getElementById('msg-title').textContent=win?'🎉 GEWONNEN!':'💀 GAME OVER';
   document.getElementById('msg-sub').textContent=win
-    ?`Du hast alle ${state.maxRound} Runden überlebt! Gepoppt: ${state.popped}`
-    :`Alle Leben verloren in Runde ${state.round}. Gepoppt: ${state.popped}`;
+    ?`Alle ${state.maxRound} Runden überlebt! Gepoppt: ${state.popped}`
+    :`Leben verloren in Runde ${state.round}. Gepoppt: ${state.popped}`;
   msg.style.display='block';
 }
 
@@ -1061,7 +1210,9 @@ function restartGame() {
   updateUI();
 }
 
-// ========== INIT ==========
+// =====================================================================
+// INIT
+// =====================================================================
 buildTowerButtons();
 updateUI();
 requestAnimationFrame(gameLoop);
