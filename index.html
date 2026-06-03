@@ -364,8 +364,8 @@ const TOWER_DEFS = [
     cost: 650,
     icon: '💣',
     color: '#555',
-    range: 130, fireRate: 80, damage: 1,
-    projectileSpeed: 5, projectileColor: '#333', projectileSize: 7,
+    range: 130, fireRate: 45, damage: 1,
+    projectileSpeed: 8, projectileColor: '#333', projectileSize: 7,
     pierce: 1, isExplosive: true, blastRadius: 40,
     upgrades: [
       // Path 0 – Explosion
@@ -692,7 +692,9 @@ function killBloon(bloon) {
 function findTarget(tower) {
   let best=null, bestDist=-1;
   for(const b of state.bloons) {
-    if(b.dead||b.frozenTimer>0) continue;
+    if(b.dead) continue;
+    // bombs can target frozen bloons; others skip them
+    if(b.frozenTimer>0 && !tower.isExplosive) continue;
     const dx=b.x-tower.x, dy=b.y-tower.y;
     const d=Math.sqrt(dx*dx+dy*dy);
     if(d<=tower.range && b.dist>bestDist) { bestDist=b.dist; best=b; }
@@ -775,14 +777,20 @@ function updateProjectile(proj) {
   if(proj.x<-60||proj.x>760||proj.y<-60||proj.y>580) { proj.dead=true; return; }
 
   if(proj.isExplosive && !proj.onHitExplode) {
-    // Seek target and explode on arrival
-    const target=state.bloons.find(b=>!b.dead&&b.id===proj.targetId);
-    if(!target) { proj.dead=true; return; }
-    const dx=proj.x-target.x, dy=proj.y-target.y;
-    if(Math.sqrt(dx*dx+dy*dy)<target.size+proj.size/2) {
-      explodeAt(proj,proj.x,proj.y);
-      proj.dead=true;
+    // Explode on contact with any bloon
+    for(const b of state.bloons) {
+      if(b.dead) continue;
+      const bt=BLOON_TYPES[b.type];
+      const dx=b.x-proj.x, dy=b.y-proj.y;
+      if(Math.sqrt(dx*dx+dy*dy)<bt.size+proj.size) {
+        explodeAt(proj,proj.x,proj.y);
+        proj.dead=true;
+        return;
+      }
     }
+    // Target died before arrival – explode at current pos if close enough to where it was
+    const target=state.bloons.find(b=>!b.dead&&b.id===proj.targetId);
+    if(!target) { explodeAt(proj,proj.x,proj.y); proj.dead=true; }
     return;
   }
 
