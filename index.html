@@ -819,6 +819,13 @@ function draw(){
   ctx.fillStyle='rgba(255,255,255,.25)';ctx.fillRect(98,16,1,20);
   ctx.font='15px Arial';ctx.fillStyle='#fff';ctx.fillText('🪙',106,cy);
   ctx.font='bold 14px Arial';ctx.fillStyle='#f0e040';ctx.fillText('$'+state.money,128,cy);
+  // Round indicator – top right
+  const roundTxt='Runde '+state.round+' / '+state.maxRound;
+  ctx.font='bold 14px Arial';ctx.textAlign='right';
+  const rw=ctx.measureText(roundTxt).width+28;
+  ctx.fillStyle='rgba(0,0,0,.45)';ctx.beginPath();ctx.roundRect(700-10-rw,10,rw,32,6);ctx.fill();
+  ctx.font='14px Arial';ctx.textAlign='left';ctx.fillStyle='#fff';ctx.fillText('🎯',700-10-rw+6,cy);
+  ctx.font='bold 13px Arial';ctx.fillStyle='#f0e040';ctx.fillText(roundTxt,700-10-rw+24,cy);
 }
 
 // ===== UI =====
