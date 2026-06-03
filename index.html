@@ -1251,6 +1251,10 @@ document.getElementById('start-btn').onclick=()=>{
   document.getElementById('start-btn').disabled=true;
 };
 
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter') document.getElementById('start-btn').click();
+});
+
 document.getElementById('speed-btn').onclick=()=>{
   state.speed=state.speed===1?2:1;
   document.getElementById('speed-btn').textContent=state.speed===2?'⏩ 1x Geschwindigkeit':'⏩ 2x Geschwindigkeit';
