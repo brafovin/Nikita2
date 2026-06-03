@@ -911,6 +911,41 @@ function drawScene() {
   ctx.fillStyle='#fff'; ctx.fillText('OUT',PATH[PATH.length-1].x,PATH[PATH.length-1].y);
 }
 
+function drawHUD() {
+  const pad=10, h=32;
+  // halbtransparenter Hintergrund
+  ctx.fillStyle='rgba(0,0,0,0.45)';
+  ctx.beginPath();
+  ctx.roundRect(pad, pad, 210, h, 6);
+  ctx.fill();
+
+  ctx.textBaseline='middle';
+  const cy=pad+h/2;
+
+  // Herz
+  ctx.font='16px Arial';
+  ctx.textAlign='left';
+  ctx.fillText('❤️', pad+8, cy);
+
+  // Leben-Wert
+  ctx.font='bold 15px Arial';
+  ctx.fillStyle='#ff6b6b';
+  ctx.fillText(Math.max(0,state.lives), pad+30, cy);
+
+  // Trenner
+  ctx.fillStyle='rgba(255,255,255,0.25)';
+  ctx.fillRect(pad+85, pad+6, 1, h-12);
+
+  // Coin
+  ctx.font='16px Arial';
+  ctx.fillText('🪙', pad+96, cy);
+
+  // Geld-Wert
+  ctx.font='bold 15px Arial';
+  ctx.fillStyle='#f0e040';
+  ctx.fillText('$'+state.money, pad+118, cy);
+}
+
 function drawTowerPreview() {
   if(!state.selectedTowerType||!state.hoveredPos) return;
   const {x,y}=state.hoveredPos;
@@ -1009,6 +1044,7 @@ function draw() {
   drawBloons();
   drawProjectiles();
   drawParticles();
+  drawHUD();
 }
 
 // =====================================================================
