@@ -506,7 +506,7 @@ function initState() {
     spawnQueue: [], spawnTimer: 0, waveActive: false,
     gameOver: false, victory: false, speed: 1,
     selectedTowerType: null, selectedTower: null, hoveredPos: null,
-    frame: 0, towerPositions: [],
+    frame: 0, towerPositions: [], explosions: [],
   };
 }
 initState();
@@ -762,7 +762,10 @@ function explodeAt(proj, x, y) {
       proj.hit.add(b.id);
     }
   }
-  burst(x,y,'#ff8800',10);
+  // Visual explosion
+  state.explosions.push({x, y, r: 4, maxR: proj.blastRadius, life: 18, maxLife: 18});
+  burst(x, y, '#ff6600', 12);
+  burst(x, y, '#ffcc00', 8);
 }
 
 function updateProjectile(proj) {
@@ -861,6 +864,10 @@ function update() {
   // Particles
   for(const p of state.particles) { p.x+=p.vx; p.y+=p.vy; p.vx*=0.9; p.vy*=0.9; p.life--; }
   state.particles=state.particles.filter(p=>p.life>0);
+
+  // Explosions
+  for(const e of state.explosions) { e.r=e.maxR*(1-e.life/e.maxLife); e.life--; }
+  state.explosions=state.explosions.filter(e=>e.life>0);
 
   // Wave done?
   if(state.waveActive && state.spawnQueue.length===0 && state.bloons.length===0) {
@@ -1027,6 +1034,26 @@ function drawProjectiles() {
   }
 }
 
+function drawExplosions() {
+  for(const e of state.explosions) {
+    const t=e.life/e.maxLife; // 1→0 as explosion ages
+    // outer shockwave ring
+    ctx.globalAlpha=t*0.6;
+    ctx.strokeStyle='#ff8800';
+    ctx.lineWidth=3;
+    ctx.beginPath(); ctx.arc(e.x,e.y,e.r,0,Math.PI*2); ctx.stroke();
+    // inner glow fill
+    const grad=ctx.createRadialGradient(e.x,e.y,0,e.x,e.y,e.r);
+    grad.addColorStop(0, `rgba(255,220,50,${t*0.55})`);
+    grad.addColorStop(0.4, `rgba(255,100,0,${t*0.4})`);
+    grad.addColorStop(1, `rgba(255,40,0,0)`);
+    ctx.fillStyle=grad;
+    ctx.beginPath(); ctx.arc(e.x,e.y,e.r,0,Math.PI*2); ctx.fill();
+  }
+  ctx.globalAlpha=1;
+  ctx.lineWidth=1;
+}
+
 function drawParticles() {
   for(const p of state.particles) {
     ctx.globalAlpha=p.life/p.maxLife;
@@ -1042,6 +1069,7 @@ function draw() {
   drawTowerPreview();
   drawTowers();
   drawBloons();
+  drawExplosions();
   drawProjectiles();
   drawParticles();
   drawHUD();
