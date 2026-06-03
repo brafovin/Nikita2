@@ -5,131 +5,86 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Bloon Pop</title>
 <style>
-* { margin:0; padding:0; box-sizing:border-box; }
-body { background:#1a1a2e; font-family:Arial,sans-serif; color:#fff; display:flex; flex-direction:column; align-items:center; min-height:100vh; overflow:hidden; }
-
-/* ===== MAP SELECT ===== */
-#map-select {
-  position:fixed; inset:0; background:#1a1a2e;
-  display:flex; flex-direction:column; align-items:center;
-  justify-content:flex-start; z-index:200; overflow-y:auto; padding-bottom:20px;
-}
-#map-select h1 { font-size:2.2rem; color:#f0e040; text-shadow:0 0 20px #f0a000,2px 2px 0 #a06000; padding:18px 0 6px; letter-spacing:3px; }
-#map-select p { color:#aaa; margin-bottom:18px; font-size:0.9rem; }
-#map-grid {
-  display:grid; grid-template-columns:repeat(3,1fr);
-  gap:14px; max-width:720px; width:100%; padding:0 16px;
-}
-.map-card {
-  background:#16213e; border:2px solid #0f3460; border-radius:10px;
-  cursor:pointer; transition:all 0.18s; overflow:hidden;
-  display:flex; flex-direction:column;
-}
-.map-card:hover { border-color:#f0a000; box-shadow:0 0 14px #f0a00055; transform:translateY(-2px); }
-.map-card canvas { display:block; width:100%; }
-.map-card-info { padding:10px 12px; }
-.map-card-name { font-size:0.95rem; font-weight:bold; color:#f0e040; }
-.map-card-diff { font-size:0.75rem; color:#aaa; margin-top:2px; }
-.diff-easy   { color:#27ae60; }
-.diff-med    { color:#f39c12; }
-.diff-hard   { color:#e74c3c; }
-.diff-expert { color:#9b59b6; }
-
-/* ===== GAME ===== */
-#game-wrapper { display:none; flex-direction:column; align-items:center; }
-#title { font-size:1.8rem; font-weight:bold; color:#f0e040; text-shadow:0 0 20px #f0a000,2px 2px 0 #a06000; padding:6px 0 2px; letter-spacing:3px; }
-#game-area { display:flex; gap:10px; align-items:flex-start; padding:4px 10px; }
-#canvas { border:3px solid #f0a000; border-radius:6px; cursor:crosshair; display:block; }
-#sidebar { width:200px; display:flex; flex-direction:column; gap:6px; max-height:530px; overflow-y:auto; }
-#sidebar::-webkit-scrollbar { width:4px; }
-#sidebar::-webkit-scrollbar-thumb { background:#0f3460; border-radius:2px; }
-#stats { background:#16213e; border:2px solid #0f3460; border-radius:8px; padding:8px 10px; font-size:0.82rem; }
-.stat-row { display:flex; justify-content:space-between; margin-bottom:3px; }
-.stat-label { color:#aaa; }
-.stat-val { font-weight:bold; color:#f0e040; }
-#towers-panel { background:#16213e; border:2px solid #0f3460; border-radius:8px; padding:8px; }
-#towers-panel h3 { font-size:0.78rem; color:#aaa; margin-bottom:6px; text-align:center; text-transform:uppercase; letter-spacing:1px; }
-.tower-btn { width:100%; margin-bottom:4px; padding:5px; border-radius:6px; border:2px solid transparent; cursor:pointer; font-size:0.75rem; font-weight:bold; transition:all 0.15s; display:flex; align-items:center; gap:6px; background:#0f3460; color:#fff; }
-.tower-btn:hover { filter:brightness(1.2); }
-.tower-btn.selected { border-color:#f0e040; box-shadow:0 0 8px #f0a000; }
-.tower-btn.too-expensive { opacity:0.4; cursor:not-allowed; }
-.tower-icon { width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; flex-shrink:0; }
-.tower-name { font-size:0.75rem; }
-.tower-cost { font-size:0.68rem; color:#f0e040; }
-#upgrade-panel { background:#16213e; border:2px solid #0f3460; border-radius:8px; padding:8px; display:none; }
-#upgrade-panel h3 { font-size:0.78rem; color:#aaa; margin-bottom:6px; text-align:center; }
-.upgrade-path { margin-bottom:7px; background:#0a1a30; border-radius:6px; padding:5px; }
-.path-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; font-size:0.7rem; color:#aaa; }
-.path-name { font-weight:bold; }
-.path-pips { display:flex; gap:3px; }
-.pip { width:9px; height:9px; border-radius:50%; background:#333; border:1px solid #555; }
-.pip.filled    { background:#f0e040; border-color:#f0a000; box-shadow:0 0 3px #f0a000; }
-.pip.filled.t3 { background:#e74c3c; border-color:#c00; }
-.pip.filled.t4 { background:#9b59b6; border-color:#7d3c98; }
-.pip.filled.t5 { background:#f39c12; border-color:#e67e22; box-shadow:0 0 5px #f39c12; }
-.upgrade-tier-btn { width:100%; padding:4px 5px; border-radius:4px; border:none; cursor:pointer; font-size:0.66rem; font-weight:bold; background:#0f5460; color:#fff; margin-bottom:2px; display:flex; justify-content:space-between; align-items:center; transition:all 0.15s; }
-.upgrade-tier-btn:hover:not(:disabled) { filter:brightness(1.25); }
-.upgrade-tier-btn:disabled { opacity:0.35; cursor:not-allowed; }
-.upgrade-tier-btn.done { background:#1a3a20; border-left:3px solid #27ae60; }
-.upgrade-tier-btn.t3 { background:#3a1a0a; border-left:3px solid #e74c3c; }
-.upgrade-tier-btn.t4 { background:#2a1040; border-left:3px solid #9b59b6; }
-.upgrade-tier-btn.t5 { background:#3a2000; border-left:3px solid #f39c12; }
-.tier-cost { color:#f0e040; font-size:0.63rem; }
-#sell-btn { width:100%; padding:5px; border-radius:5px; border:none; cursor:pointer; font-size:0.73rem; font-weight:bold; background:#7a0000; color:#fff; margin-top:4px; }
-#sell-btn:hover { filter:brightness(1.2); }
-#action-btns { display:flex; flex-direction:column; gap:5px; }
-#start-btn,#speed-btn { padding:8px; border-radius:8px; border:none; cursor:pointer; font-size:0.85rem; font-weight:bold; width:100%; transition:all 0.15s; }
-#start-btn { background:#16a34a; color:#fff; }
-#start-btn:hover:not(:disabled) { filter:brightness(1.15); }
-#start-btn:disabled { background:#444; cursor:not-allowed; }
-#speed-btn { background:#1d4ed8; color:#fff; }
-#speed-btn:hover { filter:brightness(1.15); }
-#back-btn { padding:6px; border-radius:6px; border:none; cursor:pointer; font-size:0.78rem; background:#2c3e50; color:#fff; width:100%; }
-#back-btn:hover { filter:brightness(1.2); }
-#bloon-legend { background:#16213e; border:2px solid #0f3460; border-radius:8px; padding:6px; font-size:0.68rem; }
-#bloon-legend h3 { color:#aaa; margin-bottom:4px; text-align:center; font-size:0.7rem; text-transform:uppercase; }
-.legend-row { display:flex; align-items:center; gap:5px; margin-bottom:2px; }
-.legend-circle { width:12px; height:12px; border-radius:50%; flex-shrink:0; border:1px solid rgba(255,255,255,0.3); }
-#message { position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); background:rgba(0,0,0,0.93); border:3px solid #f0a000; border-radius:16px; padding:28px 44px; text-align:center; display:none; z-index:300; }
-#message h2 { font-size:1.9rem; margin-bottom:10px; }
-#message p { color:#aaa; margin-bottom:18px; }
-.msg-btns { display:flex; gap:10px; justify-content:center; }
-.msg-btns button { padding:11px 24px; border-radius:8px; border:none; cursor:pointer; font-size:0.95rem; font-weight:bold; }
-#msg-restart { background:#16a34a; color:#fff; }
-#msg-menu    { background:#2c3e50; color:#fff; }
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:#1a1a2e;font-family:Arial,sans-serif;color:#fff;display:flex;flex-direction:column;align-items:center;min-height:100vh;overflow:hidden;}
+#map-select{position:fixed;inset:0;background:#1a1a2e;display:flex;flex-direction:column;align-items:center;z-index:200;overflow-y:auto;padding-bottom:20px;}
+#map-select h1{font-size:2rem;color:#f0e040;text-shadow:0 0 20px #f0a000,2px 2px 0 #a06000;padding:14px 0 4px;letter-spacing:3px;}
+#map-select p{color:#aaa;margin-bottom:14px;font-size:.88rem;}
+#map-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;max-width:900px;width:100%;padding:0 14px;}
+.map-card{background:#16213e;border:2px solid #0f3460;border-radius:10px;cursor:pointer;transition:all .18s;overflow:hidden;}
+.map-card:hover{border-color:#f0a000;box-shadow:0 0 14px #f0a00055;transform:translateY(-2px);}
+.map-card canvas{display:block;width:100%;}
+.map-card-info{padding:8px 10px;}
+.map-card-name{font-size:.88rem;font-weight:bold;color:#f0e040;}
+.map-card-diff{font-size:.72rem;color:#aaa;margin-top:2px;}
+.diff-easy{color:#27ae60;}.diff-med{color:#f39c12;}.diff-hard{color:#e74c3c;}.diff-expert{color:#9b59b6;}.diff-extreme{color:#ff00ff;}
+#game-wrapper{display:none;flex-direction:column;align-items:center;}
+#title{font-size:1.7rem;font-weight:bold;color:#f0e040;text-shadow:0 0 20px #f0a000,2px 2px 0 #a06000;padding:5px 0 2px;letter-spacing:3px;}
+#game-area{display:flex;gap:10px;align-items:flex-start;padding:3px 8px;}
+#canvas{border:3px solid #f0a000;border-radius:6px;cursor:crosshair;display:block;}
+#sidebar{width:195px;display:flex;flex-direction:column;gap:5px;max-height:535px;overflow-y:auto;}
+#sidebar::-webkit-scrollbar{width:4px;}
+#sidebar::-webkit-scrollbar-thumb{background:#0f3460;border-radius:2px;}
+#stats{background:#16213e;border:2px solid #0f3460;border-radius:8px;padding:7px 9px;font-size:.8rem;}
+.stat-row{display:flex;justify-content:space-between;margin-bottom:3px;}
+.stat-label{color:#aaa;}.stat-val{font-weight:bold;color:#f0e040;}
+#towers-panel{background:#16213e;border:2px solid #0f3460;border-radius:8px;padding:7px;}
+#towers-panel h3{font-size:.75rem;color:#aaa;margin-bottom:5px;text-align:center;text-transform:uppercase;letter-spacing:1px;}
+.tower-btn{width:100%;margin-bottom:3px;padding:4px;border-radius:5px;border:2px solid transparent;cursor:pointer;font-size:.72rem;font-weight:bold;transition:all .15s;display:flex;align-items:center;gap:5px;background:#0f3460;color:#fff;}
+.tower-btn:hover{filter:brightness(1.2);}.tower-btn.selected{border-color:#f0e040;box-shadow:0 0 7px #f0a000;}.tower-btn.too-expensive{opacity:.4;cursor:not-allowed;}
+.tower-icon{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;}
+.tower-name{font-size:.72rem;}.tower-cost{font-size:.65rem;color:#f0e040;}
+#upgrade-panel{background:#16213e;border:2px solid #0f3460;border-radius:8px;padding:7px;display:none;}
+#upgrade-panel h3{font-size:.75rem;color:#aaa;margin-bottom:5px;text-align:center;}
+.upgrade-path{margin-bottom:6px;background:#0a1a30;border-radius:5px;padding:4px;}
+.path-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px;font-size:.68rem;color:#aaa;}
+.path-name{font-weight:bold;}.path-pips{display:flex;gap:2px;}
+.pip{width:8px;height:8px;border-radius:50%;background:#333;border:1px solid #555;}
+.pip.filled{background:#f0e040;border-color:#f0a000;box-shadow:0 0 3px #f0a000;}
+.pip.filled.t3{background:#e74c3c;border-color:#c00;}.pip.filled.t4{background:#9b59b6;border-color:#7d3c98;}.pip.filled.t5{background:#f39c12;box-shadow:0 0 5px #f39c12;}
+.upgrade-tier-btn{width:100%;padding:3px 5px;border-radius:4px;border:none;cursor:pointer;font-size:.64rem;font-weight:bold;background:#0f5460;color:#fff;margin-bottom:2px;display:flex;justify-content:space-between;align-items:center;transition:all .15s;}
+.upgrade-tier-btn:hover:not(:disabled){filter:brightness(1.25);}.upgrade-tier-btn:disabled{opacity:.35;cursor:not-allowed;}
+.upgrade-tier-btn.done{background:#1a3a20;border-left:3px solid #27ae60;}.upgrade-tier-btn.t3{background:#3a1a0a;border-left:3px solid #e74c3c;}.upgrade-tier-btn.t4{background:#2a1040;border-left:3px solid #9b59b6;}.upgrade-tier-btn.t5{background:#3a2000;border-left:3px solid #f39c12;}
+.tier-cost{color:#f0e040;font-size:.62rem;}
+#sell-btn{width:100%;padding:4px;border-radius:5px;border:none;cursor:pointer;font-size:.7rem;font-weight:bold;background:#7a0000;color:#fff;margin-top:3px;}
+#sell-btn:hover{filter:brightness(1.2);}
+#action-btns{display:flex;flex-direction:column;gap:4px;}
+#start-btn,#speed-btn,#back-btn{padding:7px;border-radius:7px;border:none;cursor:pointer;font-size:.82rem;font-weight:bold;width:100%;transition:all .15s;}
+#start-btn{background:#16a34a;color:#fff;}#start-btn:hover:not(:disabled){filter:brightness(1.15);}#start-btn:disabled{background:#444;cursor:not-allowed;}
+#speed-btn{background:#1d4ed8;color:#fff;}#speed-btn:hover{filter:brightness(1.15);}
+#back-btn{background:#2c3e50;color:#fff;}#back-btn:hover{filter:brightness(1.2);}
+#bloon-legend{background:#16213e;border:2px solid #0f3460;border-radius:8px;padding:5px;font-size:.65rem;}
+#bloon-legend h3{color:#aaa;margin-bottom:4px;text-align:center;font-size:.68rem;text-transform:uppercase;}
+.legend-row{display:flex;align-items:center;gap:4px;margin-bottom:2px;}
+.legend-circle{width:11px;height:11px;border-radius:50%;flex-shrink:0;border:1px solid rgba(255,255,255,.3);}
+#message{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.93);border:3px solid #f0a000;border-radius:16px;padding:26px 42px;text-align:center;display:none;z-index:300;}
+#message h2{font-size:1.8rem;margin-bottom:8px;}
+#message p{color:#aaa;margin-bottom:16px;}
+.msg-btns{display:flex;gap:10px;justify-content:center;}
+.msg-btns button{padding:10px 22px;border-radius:7px;border:none;cursor:pointer;font-size:.9rem;font-weight:bold;}
+#msg-restart{background:#16a34a;color:#fff;}#msg-menu{background:#2c3e50;color:#fff;}
 </style>
 </head>
 <body>
-
-<!-- MAP SELECT -->
 <div id="map-select">
   <h1>🎈 BLOON POP 🎈</h1>
   <p>Wähle deine Karte</p>
   <div id="map-grid"></div>
 </div>
-
-<!-- GAME -->
 <div id="game-wrapper">
   <div id="title">🎈 BLOON POP 🎈</div>
   <div id="game-area">
     <canvas id="canvas" width="700" height="520"></canvas>
     <div id="sidebar">
       <div id="stats">
-        <div class="stat-row"><span class="stat-label">🎯 Runde</span><span class="stat-val" id="stat-round">1/30</span></div>
+        <div class="stat-row"><span class="stat-label">🎯 Runde</span><span class="stat-val" id="stat-round">1/60</span></div>
         <div class="stat-row"><span class="stat-label">💥 Gepoppt</span><span class="stat-val" id="stat-popped">0</span></div>
       </div>
-      <div id="towers-panel">
-        <h3>Türme platzieren</h3>
-        <div id="tower-buttons"></div>
-      </div>
-      <div id="upgrade-panel">
-        <h3 id="upgrade-title">Turm</h3>
-        <div id="upgrade-paths"></div>
-        <button id="sell-btn">Verkaufen</button>
-      </div>
+      <div id="towers-panel"><h3>Türme</h3><div id="tower-buttons"></div></div>
+      <div id="upgrade-panel"><h3 id="upgrade-title">Turm</h3><div id="upgrade-paths"></div><button id="sell-btn">Verkaufen</button></div>
       <div id="action-btns">
         <button id="start-btn">▶ Runde starten</button>
-        <button id="speed-btn">⏩ 2x Geschwindigkeit</button>
+        <button id="speed-btn">⏩ 2x Speed</button>
         <button id="back-btn">🗺 Karte wechseln</button>
       </div>
       <div id="bloon-legend">
@@ -141,599 +96,412 @@ body { background:#1a1a2e; font-family:Arial,sans-serif; color:#fff; display:fle
         <div class="legend-row"><div class="legend-circle" style="background:#ff69b4"></div><span>Pink (5 HP)</span></div>
         <div class="legend-row"><div class="legend-circle" style="background:#888"></div><span>Schwarz (6 HP)</span></div>
         <div class="legend-row"><div class="legend-circle" style="background:#8B4513"></div><span>Keramik (10 HP)</span></div>
-        <div class="legend-row"><div class="legend-circle" style="background:#d4af37;border:2px solid #8B0000"></div><span>MOAB (50 HP)</span></div>
+        <div class="legend-row"><div class="legend-circle" style="background:#d4af37;border:2px solid #8B0000"></div><span>MOAB (200 HP)</span></div>
+        <div class="legend-row"><div class="legend-circle" style="background:#4444ff;border:2px solid #0000aa"></div><span>BFB (700 HP)</span></div>
+        <div class="legend-row"><div class="legend-circle" style="background:#00cc00;border:2px solid #006600"></div><span>ZOMG (4000 HP)</span></div>
+        <div class="legend-row"><div class="legend-circle" style="background:#111;border:2px solid #666"></div><span>DDT (375 HP schnell)</span></div>
+        <div class="legend-row"><div class="legend-circle" style="background:#ff0055;border:2px solid #aa0033"></div><span>BAD (20000 HP)</span></div>
       </div>
     </div>
   </div>
 </div>
-
 <div id="message">
-  <h2 id="msg-title"></h2>
-  <p id="msg-sub"></p>
+  <h2 id="msg-title"></h2><p id="msg-sub"></p>
   <div class="msg-btns">
     <button id="msg-restart" onclick="restartGame()">Nochmal</button>
-    <button id="msg-menu"    onclick="goToMenu()">Karte wählen</button>
+    <button id="msg-menu" onclick="goToMenu()">Karte wählen</button>
   </div>
 </div>
-
 <script>
-// =====================================================================
-// MAP DEFINITIONS
-// =====================================================================
-const MAP_DEFS = [
-  {
-    id:'monkey_lane',
-    name:'Affenstraße',
-    difficulty:'Leicht', diffClass:'diff-easy',
-    grassColor:'#4a8c55',
-    path:[
-      {x:0,   y:260},
-      {x:220, y:260},
-      {x:220, y:120},
-      {x:480, y:120},
-      {x:480, y:400},
-      {x:700, y:400},
-    ]
-  },
-  {
-    id:'serpentine',
-    name:'Serpentine',
-    difficulty:'Mittel', diffClass:'diff-med',
-    grassColor:'#3d7a47',
-    path:[
-      {x:0,   y:110},
-      {x:160, y:110},
-      {x:160, y:280},
-      {x:340, y:280},
-      {x:340, y:110},
-      {x:520, y:110},
-      {x:520, y:370},
-      {x:700, y:370},
-    ]
-  },
-  {
-    id:'apokalypse',
-    name:'Apokalypse',
-    difficulty:'Mittel', diffClass:'diff-med',
-    grassColor:'#3a7d44',
-    path:[
-      {x:0,   y:130},
-      {x:160, y:130},
-      {x:160, y:60},
-      {x:380, y:60},
-      {x:380, y:230},
-      {x:240, y:230},
-      {x:240, y:370},
-      {x:520, y:370},
-      {x:520, y:180},
-      {x:700, y:180},
-    ]
-  },
-  {
-    id:'fortress',
-    name:'Festung',
-    difficulty:'Schwer', diffClass:'diff-hard',
-    grassColor:'#2e6e38',
-    path:[
-      {x:0,   y:400},
-      {x:110, y:400},
-      {x:110, y:90},
-      {x:320, y:90},
-      {x:320, y:300},
-      {x:210, y:300},
-      {x:210, y:460},
-      {x:520, y:460},
-      {x:520, y:200},
-      {x:420, y:200},
-      {x:420, y:50},
-      {x:650, y:50},
-      {x:650, y:330},
-      {x:700, y:330},
-    ]
-  },
-  {
-    id:'labyrinth',
-    name:'Labyrinth',
-    difficulty:'Experte', diffClass:'diff-expert',
-    grassColor:'#1e5228',
-    path:[
-      {x:0,   y:260},
-      {x:80,  y:260},
-      {x:80,  y:70},
-      {x:210, y:70},
-      {x:210, y:190},
-      {x:130, y:190},
-      {x:130, y:390},
-      {x:320, y:390},
-      {x:320, y:190},
-      {x:260, y:190},
-      {x:260, y:50},
-      {x:490, y:50},
-      {x:490, y:310},
-      {x:380, y:310},
-      {x:380, y:450},
-      {x:610, y:450},
-      {x:610, y:160},
-      {x:700, y:160},
-    ]
-  },
-  {
-    id:'longpath',
-    name:'Langer Weg',
-    difficulty:'Schwer', diffClass:'diff-hard',
-    grassColor:'#356b3e',
-    path:[
-      {x:0,   y:80},
-      {x:120, y:80},
-      {x:120, y:200},
-      {x:50,  y:200},
-      {x:50,  y:360},
-      {x:230, y:360},
-      {x:230, y:180},
-      {x:380, y:180},
-      {x:380, y:420},
-      {x:560, y:420},
-      {x:560, y:100},
-      {x:640, y:100},
-      {x:640, y:300},
-      {x:700, y:300},
-    ]
-  },
+// ===== MAPS =====
+const MAP_DEFS=[
+  {id:'monkey_lane',name:'Affenstraße',difficulty:'Leicht',diffClass:'diff-easy',grassColor:'#4a8c55',
+   path:[{x:0,y:260},{x:180,y:260},{x:180,y:120},{x:360,y:120},{x:360,y:390},{x:540,y:390},{x:540,y:200},{x:700,y:200}]},
+  {id:'wiesenweg',name:'Wiesenweg',difficulty:'Leicht',diffClass:'diff-easy',grassColor:'#5a9645',
+   path:[{x:0,y:150},{x:110,y:150},{x:110,y:270},{x:220,y:270},{x:220,y:140},{x:340,y:140},{x:340,y:360},{x:460,y:360},{x:460,y:190},{x:580,y:190},{x:580,y:370},{x:660,y:370},{x:660,y:260},{x:700,y:260}]},
+  {id:'serpentine',name:'Serpentine',difficulty:'Mittel',diffClass:'diff-med',grassColor:'#3d7a47',
+   path:[{x:0,y:100},{x:140,y:100},{x:140,y:260},{x:280,y:260},{x:280,y:100},{x:420,y:100},{x:420,y:320},{x:560,y:320},{x:560,y:140},{x:700,y:140}]},
+  {id:'apokalypse',name:'Apokalypse',difficulty:'Mittel',diffClass:'diff-med',grassColor:'#3a7d44',
+   path:[{x:0,y:130},{x:160,y:130},{x:160,y:60},{x:380,y:60},{x:380,y:230},{x:240,y:230},{x:240,y:370},{x:520,y:370},{x:520,y:180},{x:700,y:180}]},
+  {id:'festung',name:'Festung',difficulty:'Schwer',diffClass:'diff-hard',grassColor:'#2e6e38',
+   path:[{x:0,y:420},{x:100,y:420},{x:100,y:80},{x:310,y:80},{x:310,y:290},{x:200,y:290},{x:200,y:470},{x:530,y:470},{x:530,y:190},{x:420,y:190},{x:420,y:50},{x:650,y:50},{x:650,y:340},{x:700,y:340}]},
+  {id:'labyrinth',name:'Labyrinth',difficulty:'Schwer',diffClass:'diff-hard',grassColor:'#255a2e',
+   path:[{x:0,y:260},{x:80,y:260},{x:80,y:70},{x:210,y:70},{x:210,y:200},{x:130,y:200},{x:130,y:400},{x:310,y:400},{x:310,y:200},{x:250,y:200},{x:250,y:50},{x:490,y:50},{x:490,y:310},{x:370,y:310},{x:370,y:460},{x:620,y:460},{x:620,y:160},{x:700,y:160}]},
+  {id:'spirale',name:'Spirale',difficulty:'Experte',diffClass:'diff-expert',grassColor:'#1e5228',
+   path:[{x:0,y:260},{x:140,y:260},{x:140,y:70},{x:590,y:70},{x:590,y:460},{x:110,y:460},{x:110,y:320},{x:460,y:320},{x:460,y:180},{x:230,y:180},{x:230,y:370},{x:380,y:370},{x:380,y:250},{x:310,y:250},{x:310,y:300},{x:700,y:300}]},
+  {id:'omega',name:'OMEGA',difficulty:'Extrem',diffClass:'diff-extreme',grassColor:'#0f2a18',
+   path:[{x:0,y:220},{x:70,y:220},{x:70,y:50},{x:190,y:50},{x:190,y:160},{x:120,y:160},{x:120,y:350},{x:240,y:350},{x:240,y:100},{x:380,y:100},{x:380,y:420},{x:300,y:420},{x:300,y:270},{x:490,y:270},{x:490,y:50},{x:620,y:50},{x:620,y:200},{x:540,y:200},{x:540,y:400},{x:700,y:400}]},
 ];
 
-// =====================================================================
-// BLOON TYPES
-// =====================================================================
-const BLOON_TYPES = {
-  red:    {color:'#e74c3c',hp:1, speed:1.0,size:11,reward:1, name:'Rot'},
-  blue:   {color:'#3498db',hp:2, speed:1.2,size:12,reward:2, name:'Blau'},
-  green:  {color:'#27ae60',hp:3, speed:1.4,size:12,reward:3, name:'Grün'},
-  yellow: {color:'#f39c12',hp:4, speed:1.8,size:11,reward:4, name:'Gelb'},
-  pink:   {color:'#ff69b4',hp:5, speed:2.2,size:12,reward:5, name:'Pink'},
-  black:  {color:'#555',   hp:6, speed:1.5,size:13,reward:6, name:'Schwarz'},
-  ceramic:{color:'#8B4513',hp:10,speed:1.2,size:15,reward:15,name:'Keramik'},
-  moab:   {color:'#d4af37',hp:50,speed:0.7,size:23,reward:50,name:'MOAB',border:'#8B0000',borderW:3},
+// ===== BLOONS =====
+const BLOON_TYPES={
+  red:   {color:'#e74c3c',hp:1,  speed:1.0,size:11,reward:1,  name:'Rot'},
+  blue:  {color:'#3498db',hp:2,  speed:1.2,size:12,reward:2,  name:'Blau'},
+  green: {color:'#27ae60',hp:3,  speed:1.4,size:12,reward:3,  name:'Grün'},
+  yellow:{color:'#f39c12',hp:4,  speed:1.8,size:11,reward:4,  name:'Gelb'},
+  pink:  {color:'#ff69b4',hp:5,  speed:2.2,size:12,reward:5,  name:'Pink'},
+  black: {color:'#555',   hp:6,  speed:1.5,size:13,reward:6,  name:'Schwarz'},
+  lead:  {color:'#7f8c8d',hp:8,  speed:1.0,size:14,reward:8,  name:'Blei',    needsExplosive:true},
+  ceramic:{color:'#8B4513',hp:10,speed:1.2,size:15,reward:15, name:'Keramik'},
+  moab:  {color:'#d4af37',hp:200,speed:0.7,size:26,reward:100,name:'MOAB',    border:'#8B0000',borderW:3,isMoabClass:true},
+  bfb:   {color:'#4444ff',hp:700,speed:0.4,size:34,reward:400,name:'BFB',     border:'#0000aa',borderW:4,isMoabClass:true},
+  zomg:  {color:'#00cc00',hp:4000,speed:0.2,size:44,reward:2000,name:'ZOMG',  border:'#006600',borderW:5,isMoabClass:true},
+  ddt:   {color:'#111',   hp:375,speed:3.0,size:22,reward:200,name:'DDT',     border:'#555',   borderW:2,isMoabClass:true,isCamo:true},
+  bad:   {color:'#ff0055',hp:20000,speed:0.18,size:54,reward:5000,name:'BAD', border:'#aa0033',borderW:6,isMoabClass:true},
 };
 
-// =====================================================================
-// TOWER DEFINITIONS  –  3 paths × 5 tiers each
-// =====================================================================
-const TOWER_DEFS = [
-  // ── DART MONKEY ──
+// ===== TOWER DEFS =====
+function U(name,cost,desc,fn){return{name,cost,desc,apply:fn};}
+const P=U; // alias
+
+const TOWER_DEFS=[
   {id:'dart',name:'Dart Affe',cost:170,icon:'🐒',color:'#8B6914',
-   range:120,fireRate:50,damage:1,projectileSpeed:7,projectileColor:'#555',projectileSize:5,pierce:1,
+   range:120,fireRate:50,damage:1,projectileSpeed:8,projectileColor:'#555',projectileSize:5,pierce:1,
    upgrades:[
-    [{name:'Scharfe Darts',   cost:170,desc:'+1 Pierce',         apply:t=>{t.pierce++;}},
-     {name:'Rasiermesser',    cost:200,desc:'+1 Pierce +1 Dmg',  apply:t=>{t.pierce++;t.damage++;}},
-     {name:'Spike-o-pult',   cost:300,desc:'Ball +3 Dmg Pierce', apply:t=>{t.isBall=true;t.damage+=3;t.pierce+=3;t.projectileSize=10;}},
-     {name:'Juggernaut',     cost:1000,desc:'+5 Dmg, Riesenball',apply:t=>{t.damage+=5;t.projectileSize=16;t.pierce+=5;}},
-     {name:'Ultra-Juggernaut',cost:5000,desc:'3x Ball',          apply:t=>{t.tripleShot=true;t.damage+=10;t.pierce+=10;}}],
-    [{name:'Schneller Schuss',cost:100,desc:'Feuerrate +30%',    apply:t=>{t.fireRate=Math.ceil(t.fireRate*0.7);}},
-     {name:'Sehr Schnell',   cost:150,desc:'Feuerrate +30%',     apply:t=>{t.fireRate=Math.ceil(t.fireRate*0.7);}},
-     {name:'Dreifach-Schuss',cost:400,desc:'3 Darts gleichzeitig',apply:t=>{t.spreadTriple=true;}},
-     {name:'Super-Fan-Club', cost:2000,desc:'Feuerrate x5',      apply:t=>{t.fireRate=Math.max(3,Math.floor(t.fireRate/5));}},
-     {name:'Tech Terror',    cost:5000,desc:'+10 Dmg Laser',     apply:t=>{t.isLaser=true;t.damage+=10;t.pierce=20;}}],
-    [{name:'Lange Reichweite',cost:100,desc:'Reichweite +20',    apply:t=>{t.range+=20;}},
-     {name:'Größere Sicht',  cost:150,desc:'Reichweite +20',     apply:t=>{t.range+=20;}},
-     {name:'Noch Länger',    cost:220,desc:'Reichweite +30',     apply:t=>{t.range+=30;}},
-     {name:'Ultra-Reichweite',cost:400,desc:'Reichweite +50',    apply:t=>{t.range+=50;}},
-     {name:'Armbrust-Meister',cost:2000,desc:'Unbegrenzte Reichweite',apply:t=>{t.range=999;t.damage+=3;t.isSniper=true;}}],
+    [P('Scharfe Darts',170,'Pierce+1',t=>{t.pierce++;}),P('Rasiermesser',200,'+1Dmg Pierce+1',t=>{t.pierce++;t.damage++;}),P('Spike-o-pult',300,'Ball +3Dmg',t=>{t.isBall=1;t.damage+=3;t.pierce+=3;t.projectileSize=10;}),P('Juggernaut',1000,'+5Dmg',t=>{t.damage+=5;t.projectileSize=16;t.pierce+=5;}),P('Ultra-Juggernaut',5000,'+10Dmg 3x',t=>{t.tripleShot=1;t.damage+=10;t.pierce+=10;})],
+    [P('Schneller',100,'Rate+30%',t=>{t.fireRate=Math.ceil(t.fireRate*.7);}),P('Sehr Schnell',150,'Rate+30%',t=>{t.fireRate=Math.ceil(t.fireRate*.7);}),P('Dreifach-Schuss',400,'3 Darts',t=>{t.spreadTriple=1;}),P('Super-Fan-Club',2000,'Rate x5',t=>{t.fireRate=Math.max(3,t.fireRate/5|0);}),P('Tech Terror',5000,'+10Dmg Laser',t=>{t.isLaser=1;t.damage+=10;t.pierce=20;})],
+    [P('Reichweite+',100,'+20 Range',t=>{t.range+=20;}),P('Sicht+',150,'+20 Range',t=>{t.range+=20;}),P('Noch Länger',220,'+30 Range',t=>{t.range+=30;}),P('Ultra Range',400,'+50 Range',t=>{t.range+=50;}),P('Armbrust-Meister',2000,'Unendlich+3Dmg',t=>{t.range=999;t.damage+=3;t.isSniper=1;})],
   ]},
-
-  // ── TACK SHOOTER ──
-  {id:'tack',name:'Tack Schütze',cost:360,icon:'📌',color:'#b04000',
-   range:90,fireRate:50,damage:1,projectileSpeed:6,projectileColor:'#b04000',projectileSize:4,pierce:1,spreadShot:8,
-   upgrades:[
-    [{name:'Mehr Stacheln',  cost:100,desc:'16 Stacheln',        apply:t=>{t.spreadShot=16;}},
-     {name:'Noch Mehr',      cost:200,desc:'24 Stacheln',        apply:t=>{t.spreadShot=24;}},
-     {name:'Tack-Sprüher',  cost:300,desc:'32 Stacheln',        apply:t=>{t.spreadShot=32;}},
-     {name:'Overdrive',      cost:800,desc:'+2 Dmg sehr schnell',apply:t=>{t.damage+=2;t.fireRate=Math.max(8,Math.floor(t.fireRate*0.4));}},
-     {name:'Die Tack-Zone', cost:4000,desc:'Dauerangriff +5 Dmg',apply:t=>{t.damage+=5;t.fireRate=3;t.range+=20;}}],
-    [{name:'Schnelles Nachladen',cost:150,desc:'Feuerrate +35%',  apply:t=>{t.fireRate=Math.ceil(t.fireRate*0.65);}},
-     {name:'Klingen-Schütze',   cost:200,desc:'Feuerrate +35%',  apply:t=>{t.fireRate=Math.ceil(t.fireRate*0.65);}},
-     {name:'Klingen-Maelstrom', cost:700,desc:'Feuerrate x3',    apply:t=>{t.fireRate=Math.max(6,Math.floor(t.fireRate/3));}},
-     {name:'Super-Maelstrom',   cost:2000,desc:'Feuerrate x2 +1 Dmg',apply:t=>{t.fireRate=Math.max(3,Math.floor(t.fireRate/2));t.damage++;}},
-     {name:'Teppich-Bomben',    cost:5000,desc:'+8 Dmg Wellen',  apply:t=>{t.damage+=8;t.pierce+=10;}}],
-    [{name:'Heiße Schüsse',cost:200,desc:'+1 Dmg',               apply:t=>{t.damage++;}},
-     {name:'Feuerring',    cost:350,desc:'+1 Dmg Pierce+2',      apply:t=>{t.damage++;t.pierce+=2;}},
-     {name:'Inferno-Ring', cost:1000,desc:'+3 Dmg Feuer',        apply:t=>{t.isFlame=true;t.damage+=3;t.projectileColor='#ff4400';}},
-     {name:'Lava-Ring',    cost:2500,desc:'+5 Dmg',              apply:t=>{t.damage+=5;}},
-     {name:'Höllensturm',  cost:6000,desc:'+10 Dmg OnHit-Explosion',apply:t=>{t.onHitExplode=true;t.isExplosive=true;t.blastRadius=25;t.damage+=10;}}],
-  ]},
-
-  // ── SNIPER ──
-  {id:'sniper',name:'Sniper',cost:350,icon:'🎯',color:'#2c3e50',
-   range:999,fireRate:90,damage:2,projectileSpeed:20,projectileColor:'#ecf0f1',projectileSize:4,pierce:1,isSniper:true,
-   upgrades:[
-    [{name:'Full Metal Jacket',cost:300,desc:'+2 Dmg',           apply:t=>{t.damage+=2;}},
-     {name:'Armor Piercing',   cost:400,desc:'+3 Dmg +2 Pierce', apply:t=>{t.damage+=3;t.pierce+=2;}},
-     {name:'Point Five Oh',    cost:600,desc:'+5 Dmg',           apply:t=>{t.damage+=5;}},
-     {name:'Bouncing Bullet',  cost:1800,desc:'+5 Dmg',          apply:t=>{t.damage+=5;t.pierce+=3;}},
-     {name:'Elite Defender',   cost:6000,desc:'+15 Dmg Turbo',   apply:t=>{t.damage+=15;t.fireRate=Math.max(5,Math.floor(t.fireRate*0.2));}}],
-    [{name:'Semi-Auto',    cost:300,desc:'Feuerrate +50%',        apply:t=>{t.fireRate=Math.ceil(t.fireRate*0.5);}},
-     {name:'Full-Auto',    cost:450,desc:'Feuerrate +40%',        apply:t=>{t.fireRate=Math.ceil(t.fireRate*0.6);}},
-     {name:'Schnellfeuer', cost:800,desc:'Feuerrate +40%',        apply:t=>{t.fireRate=Math.ceil(t.fireRate*0.6);}},
-     {name:'Elite-Sniper', cost:2000,desc:'+$1 pro Schuss',       apply:t=>{t.moneyPerShot=1;}},
-     {name:'Weltklasse',   cost:8000,desc:'x3 Dmg +$3/Schuss',    apply:t=>{t.damage*=3;t.moneyPerShot=3;}}],
-    [{name:'Nachtsicht',   cost:200,desc:'Kein Malus',            apply:t=>{t.nightVision=true;}},
-     {name:'Zoomscope',    cost:300,desc:'+1 Pierce',             apply:t=>{t.pierce++;}},
-     {name:'Sprengmunition',cost:900,desc:'Explosion bei Treffer',apply:t=>{t.isExplosive=true;t.blastRadius=20;t.onHitExplode=true;}},
-     {name:'Supply-Drop',  cost:3000,desc:'Runde +$500',          apply:t=>{t.supplyDrop=true;}},
-     {name:'Minigun',      cost:7000,desc:'x10 Feuerrate Pierce10',apply:t=>{t.fireRate=Math.max(2,Math.floor(t.fireRate/10));t.pierce=10;t.damage+=8;}}],
-  ]},
-
-  // ── BOMB TOWER ──
-  {id:'bomb',name:'Bombe',cost:650,icon:'💣',color:'#555',
-   range:130,fireRate:75,damage:1,projectileSpeed:8,projectileColor:'#333',projectileSize:7,pierce:1,isExplosive:true,blastRadius:40,
-   upgrades:[
-    [{name:'Großer Sprengkopf',cost:300,desc:'Radius +20',       apply:t=>{t.blastRadius+=20;}},
-     {name:'Noch Größer',      cost:400,desc:'Radius +20',       apply:t=>{t.blastRadius+=20;}},
-     {name:'Cluster-Bomben',   cost:700,desc:'Cluster',          apply:t=>{t.clusterBomb=true;}},
-     {name:'MOAB-Mauler',      cost:2000,desc:'×10 Dmg vs MOAB', apply:t=>{t.moabMauler=true;t.damage+=2;}},
-     {name:'MOAB-Eliminator',  cost:7500,desc:'Riesige Explosion',apply:t=>{t.moabElim=true;t.damage+=20;t.blastRadius+=40;}}],
-    [{name:'Sprengstoff+', cost:350,desc:'+1 Dmg',               apply:t=>{t.damage++;}},
-     {name:'Mehr Kraft',   cost:500,desc:'+2 Dmg',               apply:t=>{t.damage+=2;}},
-     {name:'MOAB-Bombe',   cost:900,desc:'+3 Dmg MOAB+',        apply:t=>{t.damage+=3;t.moabMauler=true;}},
-     {name:'Titan-Bombe',  cost:2500,desc:'+8 Dmg',             apply:t=>{t.damage+=8;}},
-     {name:'Nuclear-Bombe',cost:9000,desc:'+20 Dmg Riesig',     apply:t=>{t.damage+=20;t.blastRadius+=60;}}],
-    [{name:'Schnelleres Ziel',cost:250,desc:'Feuerrate +25%',    apply:t=>{t.fireRate=Math.ceil(t.fireRate*0.75);}},
-     {name:'Schnelle Bomben', cost:350,desc:'Feuerrate +25%',    apply:t=>{t.fireRate=Math.ceil(t.fireRate*0.75);}},
-     {name:'Rapid Reload',    cost:600,desc:'Feuerrate +40%',    apply:t=>{t.fireRate=Math.ceil(t.fireRate*0.6);}},
-     {name:'Weiter Schuss',   cost:1200,desc:'Reichweite +40',   apply:t=>{t.range+=40;}},
-     {name:'Bomber Ace',      cost:4000,desc:'Feuerrate x3 +5 Dmg',apply:t=>{t.fireRate=Math.max(8,Math.floor(t.fireRate/3));t.damage+=5;}}],
-  ]},
-
-  // ── ICE TOWER ──
-  {id:'ice',name:'Eis-Turm',cost:500,icon:'❄️',color:'#00bfff',
-   range:100,fireRate:120,damage:0,projectileSpeed:0,projectileColor:'#00bfff',projectileSize:0,pierce:999,isFreeze:true,freezeDuration:60,
-   upgrades:[
-    [{name:'Tiefkühlung',   cost:200,desc:'Einfrierzeit +50%',   apply:t=>{t.freezeDuration=Math.round(t.freezeDuration*1.5);}},
-     {name:'Permafrost',    cost:300,desc:'Einfrierzeit ×2',     apply:t=>{t.freezeDuration*=2;}},
-     {name:'Arktischer Wind',cost:600,desc:'Alle eingefroren',   apply:t=>{t.arcticWind=true;}},
-     {name:'Absolute Zero', cost:2500,desc:'Riesige Eiswelle',   apply:t=>{t.absZero=true;t.range+=30;t.freezeDuration*=2;}},
-     {name:'Polar Vortex',  cost:6500,desc:'+5 Dmg beim Einfrieren',apply:t=>{t.damage=5;t.freezeDuration*=2;}}],
-    [{name:'Ice-Scherben',  cost:250,desc:'+1 Dmg',              apply:t=>{t.damage=Math.max(1,t.damage);t.damage++;}},
-     {name:'Cryo-Cannon',   cost:400,desc:'+2 Dmg',             apply:t=>{t.damage+=2;}},
-     {name:'Snap Freeze',   cost:700,desc:'+3 Dmg schneller',   apply:t=>{t.damage+=3;t.fireRate=Math.ceil(t.fireRate*0.6);}},
-     {name:'Super Brittle', cost:2000,desc:'+5 Dmg alle schwächer',apply:t=>{t.damage+=5;t.superBrittle=true;}},
-     {name:'Blizzard',      cost:6000,desc:'+10 Dmg alles',     apply:t=>{t.damage+=10;t.range+=50;}}],
-    [{name:'Mehr Reichweite',cost:200,desc:'Reichweite +20',     apply:t=>{t.range+=20;}},
-     {name:'Größere Zone',  cost:300,desc:'Reichweite +20',      apply:t=>{t.range+=20;}},
-     {name:'Schnelle Eis',  cost:450,desc:'Feuerrate +40%',      apply:t=>{t.fireRate=Math.ceil(t.fireRate*0.6);}},
-     {name:'Cryo-Ring',     cost:1500,desc:'Ring-Schuss 360°',   apply:t=>{t.cryoRing=true;}},
-     {name:'Tundra',        cost:5000,desc:'Permanenter Frost',  apply:t=>{t.tundra=true;t.range+=60;t.fireRate=30;}}],
-  ]},
-
-  // ── GLUE GUNNER ──
-  {id:'glue',name:'Kleber',cost:275,icon:'🟡',color:'#a0a000',
-   range:110,fireRate:60,damage:0,projectileSpeed:8,projectileColor:'#c8c800',projectileSize:6,pierce:1,isGlue:true,slowFactor:0.4,slowDuration:180,
-   upgrades:[
-    [{name:'Stärkerer Kleber',cost:200,desc:'Verlangsamung ×2',  apply:t=>{t.slowFactor=Math.max(0.05,t.slowFactor*0.5);}},
-     {name:'Super-Kleber',    cost:300,desc:'Verlangsamung ×2',  apply:t=>{t.slowFactor=Math.max(0.05,t.slowFactor*0.5);}},
-     {name:'Lösungsmittel',  cost:500,desc:'+1 DOT-Schaden/s',  apply:t=>{t.glueDot=true;t.glueDotDmg=1;}},
-     {name:'Ätzend',          cost:1500,desc:'+2 DOT/s',        apply:t=>{t.glueDotDmg=2;}},
-     {name:'Kleber-Storm',    cost:5000,desc:'Alle sofort langsam',apply:t=>{t.glueStorm=true;t.slowFactor=0.01;t.range+=40;}}],
-    [{name:'Kleber-Sprüher',cost:150,desc:'+3 Pierce',           apply:t=>{t.pierce+=3;}},
-     {name:'Maxi-Kleber',   cost:250,desc:'+5 Pierce',           apply:t=>{t.pierce+=5;}},
-     {name:'Kleber-Blitz',  cost:400,desc:'+10 Pierce',          apply:t=>{t.pierce+=10;}},
-     {name:'MOAB-Kleber',   cost:1500,desc:'MOAB verlangsamt',   apply:t=>{t.glueMoab=true;t.slowFactor=Math.min(t.slowFactor,0.3);}},
-     {name:'Kleber-Kanone', cost:4500,desc:'Riesige Kleberfläche',apply:t=>{t.pierce=999;t.range+=30;t.blastRadius=60;t.isGlueExplosion=true;}}],
-    [{name:'Langlebig',     cost:180,desc:'Dauer +50%',          apply:t=>{t.slowDuration=Math.round(t.slowDuration*1.5);}},
-     {name:'Extralang',     cost:250,desc:'Dauer ×2',            apply:t=>{t.slowDuration*=2;}},
-     {name:'Infiziert',     cost:500,desc:'+1 Dmg',              apply:t=>{t.damage=1;}},
-     {name:'Tödlich',       cost:1200,desc:'+2 Dmg',             apply:t=>{t.damage+=2;}},
-     {name:'Biobombe',      cost:4000,desc:'+5 Dmg Kette',       apply:t=>{t.damage+=5;t.chainGlue=true;}}],
-  ]},
-
-  // ── BOOMERANG MONKEY ──
   {id:'boomerang',name:'Bumerang Affe',cost:300,icon:'🪃',color:'#8B4513',
    range:140,fireRate:40,damage:1,projectileSpeed:7,projectileColor:'#8B4513',projectileSize:7,pierce:5,
    upgrades:[
-    [{name:'Schärferer Bumerang',cost:150,desc:'+2 Pierce',       apply:t=>{t.pierce+=2;}},
-     {name:'Tri-Bumerang',      cost:250,desc:'3 Bumerangs',      apply:t=>{t.spreadTriple=true;}},
-     {name:'Gummi-to-Gold',     cost:500,desc:'+3 Dmg Pierce+3', apply:t=>{t.damage+=3;t.pierce+=3;t.projectileColor='#f0c020';}},
-     {name:'Bionic Boomer',     cost:1800,desc:'x3 Feuerrate',    apply:t=>{t.fireRate=Math.max(8,Math.floor(t.fireRate/3));}},
-     {name:'MOAB-Dominator',    cost:6000,desc:'+10 Dmg Rückkehr',apply:t=>{t.damage+=10;t.pierce+=10;t.boomerangReturn=true;}}],
-    [{name:'Rang-Boomerang',cost:200,desc:'Reichweite +20',       apply:t=>{t.range+=20;}},
-     {name:'Redband',       cost:300,desc:'+1 Dmg Reichweite+20', apply:t=>{t.damage++;t.range+=20;}},
-     {name:'Rot-Heiß',      cost:500,desc:'+2 Dmg',              apply:t=>{t.damage+=2;t.projectileColor='#e74c3c';}},
-     {name:'Turbo-Charge',  cost:1500,desc:'Feuerrate x2',        apply:t=>{t.fireRate=Math.max(10,Math.floor(t.fireRate/2));}},
-     {name:'Plasma-Boomer', cost:5000,desc:'+8 Dmg alle treffen', apply:t=>{t.damage+=8;t.pierce=20;t.projectileColor='#bf00ff';}}],
-    [{name:'Fast Ricochets',cost:150,desc:'Projektilspeed +3',    apply:t=>{t.projectileSpeed+=3;}},
-     {name:'Eco-Boost',     cost:250,desc:'+$1 pro Runde',        apply:t=>{t.supplyDrop=true;}},
-     {name:'Rejoomer',      cost:400,desc:'+3 Pierce',            apply:t=>{t.pierce+=3;}},
-     {name:'Long Range',    cost:600,desc:'Reichweite +30',       apply:t=>{t.range+=30;}},
-     {name:'Support Chinook',cost:4500,desc:'+$500 jede Runde',  apply:t=>{t.supplyDrop=true;t.supplyAmt=500;}}],
+    [P('Schärfer',150,'Pierce+2',t=>{t.pierce+=2;}),P('Tri-Bumerang',250,'3x Bumerang',t=>{t.spreadTriple=1;}),P('Gold',500,'+3Dmg Pierce+3',t=>{t.damage+=3;t.pierce+=3;t.projectileColor='#f0c020';}),P('Bionic',1800,'Rate x3',t=>{t.fireRate=Math.max(8,t.fireRate/3|0);}),P('MOAB-Dominator',6000,'+10Dmg Pierce+10',t=>{t.damage+=10;t.pierce+=10;})],
+    [P('Reichweite+',200,'+20 Range',t=>{t.range+=20;}),P('Redband',300,'+1Dmg+20Range',t=>{t.damage++;t.range+=20;}),P('Rot-Heiß',500,'+2Dmg',t=>{t.damage+=2;}),P('Turbo',1500,'Rate x2',t=>{t.fireRate=Math.max(10,t.fireRate/2|0);}),P('Plasma',5000,'+8Dmg Pierce20',t=>{t.damage+=8;t.pierce=20;t.projectileColor='#bf00ff';})],
+    [P('Schneller',150,'Speed+3',t=>{t.projectileSpeed+=3;}),P('Eco',250,'+$200/Runde',t=>{t.supplyDrop=1;t.supplyAmt=200;}),P('Rejoomer',400,'Pierce+3',t=>{t.pierce+=3;}),P('Long Range',600,'+30 Range',t=>{t.range+=30;}),P('Chinook',4500,'+$500/Runde',t=>{t.supplyDrop=1;t.supplyAmt=500;})],
   ]},
-
-  // ── NINJA MONKEY ──
-  {id:'ninja',name:'Ninja Affe',cost:500,icon:'🥷',color:'#2c2c2c',
-   range:120,fireRate:22,damage:1,projectileSpeed:12,projectileColor:'#aaa',projectileSize:4,pierce:2,
+  {id:'bomb',name:'Bombe',cost:650,icon:'💣',color:'#555',
+   range:130,fireRate:75,damage:1,projectileSpeed:8,projectileColor:'#333',projectileSize:7,pierce:1,isExplosive:1,blastRadius:40,
    upgrades:[
-    [{name:'Schärfere Shurikens',cost:200,desc:'+1 Pierce',       apply:t=>{t.pierce++;}},
-     {name:'Doppel-Shurikens',   cost:300,desc:'2 Shurikens',     apply:t=>{t.spreadTriple=false;t.dualShot=true;}},
-     {name:'Blendung',           cost:500,desc:'Kurzes Einfrieren',apply:t=>{t.ninjaFreeze=true;t.ninjaFreezeTime=20;}},
-     {name:'Sabotage',           cost:2000,desc:'Alle MOAB langsamer',apply:t=>{t.sabotage=true;}},
-     {name:'Master-Ninja',       cost:8000,desc:'+5 Dmg Pierce15', apply:t=>{t.damage+=5;t.pierce=15;t.fireRate=Math.max(5,Math.floor(t.fireRate*0.5));}}],
-    [{name:'Ninja-Disziplin',cost:200,desc:'Feuerrate +30%',       apply:t=>{t.fireRate=Math.ceil(t.fireRate*0.7);}},
-     {name:'Ninja-Focus',    cost:300,desc:'Feuerrate +30%',       apply:t=>{t.fireRate=Math.ceil(t.fireRate*0.7);}},
-     {name:'Flash-Bomb',     cost:600,desc:'AoE Schaden',          apply:t=>{t.flashBomb=true;t.flashBombDmg=2;t.flashBombR=35;}},
-     {name:'Nighthawk',      cost:1500,desc:'Feuerrate x2',        apply:t=>{t.fireRate=Math.max(7,Math.floor(t.fireRate/2));}},
-     {name:'Grand Master',   cost:7000,desc:'x4 Feuerrate Pierce20',apply:t=>{t.fireRate=Math.max(3,Math.floor(t.fireRate/4));t.pierce=20;}}],
-    [{name:'Camo-Erkennung',cost:150,desc:'Unsichtbare Bloons',    apply:t=>{t.camoDet=true;}},
-     {name:'Caltrops',       cost:300,desc:'Stacheln auf Pfad',     apply:t=>{t.caltrops=true;}},
-     {name:'Smoke Screen',   cost:500,desc:'Verlangsamt 30%',      apply:t=>{t.smokeSlowFactor=0.7;t.smokeArea=true;}},
-     {name:'Ninjutsu',       cost:1200,desc:'+2 Dmg',              apply:t=>{t.damage+=2;}},
-     {name:'Assassin',       cost:5000,desc:'+8 Dmg 1-shot Keramik',apply:t=>{t.damage+=8;t.assassin=true;}}],
+    [P('Großer Kopf',300,'Radius+20',t=>{t.blastRadius+=20;}),P('Cluster',400,'Radius+20',t=>{t.blastRadius+=20;}),P('MOAB-Assault',700,'Cluster Bomben',t=>{t.clusterBomb=1;}),P('MOAB-Mauler',2000,'x10 vs MOAB',t=>{t.moabMauler=1;t.damage+=2;}),P('MOAB-Eliminator',7500,'+20Dmg RiesigeExplosion',t=>{t.moabElim=1;t.damage+=20;t.blastRadius+=40;})],
+    [P('Sprengstoff+',350,'+1Dmg',t=>{t.damage++;}),P('Mehr Kraft',500,'+2Dmg',t=>{t.damage+=2;}),P('Titan',900,'+3Dmg',t=>{t.damage+=3;}),P('Nuclear',2500,'+8Dmg',t=>{t.damage+=8;}),P('Annihilation',9000,'+20Dmg+60Radius',t=>{t.damage+=20;t.blastRadius+=60;})],
+    [P('Ziel+',250,'Rate+25%',t=>{t.fireRate=Math.ceil(t.fireRate*.75);}),P('Schnell',350,'Rate+25%',t=>{t.fireRate=Math.ceil(t.fireRate*.75);}),P('Rapid Reload',600,'Rate+40%',t=>{t.fireRate=Math.ceil(t.fireRate*.6);}),P('Range+',1200,'+40 Range',t=>{t.range+=40;}),P('Bomber Ace',4000,'Rate x3+5Dmg',t=>{t.fireRate=Math.max(8,t.fireRate/3|0);t.damage+=5;})],
   ]},
-
-  // ── WIZARD MONKEY ──
+  {id:'tack',name:'Tack Schütze',cost:360,icon:'📌',color:'#b04000',
+   range:90,fireRate:50,damage:1,projectileSpeed:6,projectileColor:'#b04000',projectileSize:4,pierce:1,spreadShot:8,
+   upgrades:[
+    [P('Mehr Stacheln',100,'16 Stacheln',t=>{t.spreadShot=16;}),P('Noch Mehr',200,'24 Stacheln',t=>{t.spreadShot=24;}),P('Sprüher',300,'32 Stacheln',t=>{t.spreadShot=32;}),P('Overdrive',800,'+2Dmg Rate x2',t=>{t.damage+=2;t.fireRate=Math.max(8,t.fireRate*.4|0);}),P('Die Tack-Zone',4000,'+5Dmg Rate=3',t=>{t.damage+=5;t.fireRate=3;t.range+=20;})],
+    [P('Nachladen+',150,'Rate+35%',t=>{t.fireRate=Math.ceil(t.fireRate*.65);}),P('Klingen',200,'Rate+35%',t=>{t.fireRate=Math.ceil(t.fireRate*.65);}),P('Maelstrom',700,'Rate x3',t=>{t.fireRate=Math.max(6,t.fireRate/3|0);}),P('Super Maelstrom',2000,'Rate x2+1Dmg',t=>{t.fireRate=Math.max(3,t.fireRate/2|0);t.damage++;}),P('Teppich',5000,'+8Dmg Pierce+10',t=>{t.damage+=8;t.pierce+=10;})],
+    [P('Heiß',200,'+1Dmg',t=>{t.damage++;}),P('Feuerring',350,'+1Dmg Pierce+2',t=>{t.damage++;t.pierce+=2;}),P('Inferno',1000,'+3Dmg Feuer',t=>{t.isFlame=1;t.damage+=3;t.projectileColor='#ff4400';}),P('Lava',2500,'+5Dmg',t=>{t.damage+=5;}),P('Höllensturm',6000,'+10Dmg OnHit-Blast',t=>{t.onHitExplode=1;t.isExplosive=1;t.blastRadius=25;t.damage+=10;})],
+  ]},
+  {id:'ice',name:'Eis-Turm',cost:500,icon:'❄️',color:'#00bfff',
+   range:100,fireRate:120,damage:0,projectileSpeed:0,projectileColor:'#00bfff',projectileSize:0,pierce:999,isFreeze:1,freezeDuration:60,
+   upgrades:[
+    [P('Tiefkühlung',200,'Freeze+50%',t=>{t.freezeDuration=t.freezeDuration*1.5|0;}),P('Permafrost',300,'Freeze x2',t=>{t.freezeDuration*=2;}),P('Arktischer Wind',600,'Alle eingefroren',t=>{t.arcticWind=1;}),P('Absolute Zero',2500,'Riesige Eiswelle',t=>{t.absZero=1;t.range+=30;t.freezeDuration*=2;}),P('Polar Vortex',6500,'+5Dmg',t=>{t.damage=5;t.freezeDuration*=2;})],
+    [P('Ice Scherben',250,'+1Dmg',t=>{t.damage=Math.max(1,t.damage)+1;}),P('Cryo Cannon',400,'+2Dmg',t=>{t.damage+=2;}),P('Snap Freeze',700,'+3Dmg Rate+',t=>{t.damage+=3;t.fireRate=Math.ceil(t.fireRate*.6);}),P('Super Brittle',2000,'+5Dmg',t=>{t.damage+=5;}),P('Blizzard',6000,'+10Dmg Range+50',t=>{t.damage+=10;t.range+=50;})],
+    [P('Range+',200,'+20 Range',t=>{t.range+=20;}),P('Zone+',300,'+20 Range',t=>{t.range+=20;}),P('Rate+',450,'Rate+40%',t=>{t.fireRate=Math.ceil(t.fireRate*.6);}),P('Cryo-Ring',1500,'360° Ring',t=>{t.cryoRing=1;}),P('Tundra',5000,'Frost permanent',t=>{t.tundra=1;t.range+=60;t.fireRate=30;})],
+  ]},
+  {id:'glue',name:'Kleber',cost:275,icon:'🟡',color:'#a0a000',
+   range:110,fireRate:60,damage:0,projectileSpeed:8,projectileColor:'#c8c800',projectileSize:6,pierce:1,isGlue:1,slowFactor:.4,slowDuration:180,
+   upgrades:[
+    [P('Stärker',200,'Slow x2',t=>{t.slowFactor=Math.max(.05,t.slowFactor*.5);}),P('Super Kleber',300,'Slow x2',t=>{t.slowFactor=Math.max(.05,t.slowFactor*.5);}),P('Lösungsmittel',500,'DOT 1/s',t=>{t.glueDot=1;t.glueDotDmg=1;}),P('Ätzend',1500,'DOT 2/s',t=>{t.glueDotDmg=2;}),P('Kleber Storm',5000,'Alle sofort',t=>{t.glueStorm=1;t.slowFactor=.01;t.range+=40;})],
+    [P('Sprüher',150,'Pierce+3',t=>{t.pierce+=3;}),P('Maxi',250,'Pierce+5',t=>{t.pierce+=5;}),P('Blitz',400,'Pierce+10',t=>{t.pierce+=10;}),P('MOAB-Kleber',1500,'MOAB verlangsamt',t=>{t.glueMoab=1;}),P('Kanone',4500,'Pierce 999 AoE',t=>{t.pierce=999;t.range+=30;t.blastRadius=60;t.isGlueAoE=1;})],
+    [P('Langlebig',180,'Dauer+50%',t=>{t.slowDuration=t.slowDuration*1.5|0;}),P('Extralang',250,'Dauer x2',t=>{t.slowDuration*=2;}),P('Infiziert',500,'+1Dmg',t=>{t.damage=1;}),P('Tödlich',1200,'+2Dmg',t=>{t.damage+=2;}),P('Biobombe',4000,'+5Dmg',t=>{t.damage+=5;})],
+  ]},
+  {id:'sniper',name:'Sniper',cost:350,icon:'🎯',color:'#2c3e50',
+   range:999,fireRate:90,damage:2,projectileSpeed:22,projectileColor:'#ecf0f1',projectileSize:4,pierce:1,isSniper:1,
+   upgrades:[
+    [P('FMJ',300,'+2Dmg',t=>{t.damage+=2;}),P('Armor Piercing',400,'+3Dmg Pierce+2',t=>{t.damage+=3;t.pierce+=2;}),P('Point Five Oh',600,'+5Dmg',t=>{t.damage+=5;}),P('Bouncing Bullet',1800,'+5Dmg Pierce+3',t=>{t.damage+=5;t.pierce+=3;}),P('Elite Defender',6000,'+15Dmg Rate x5',t=>{t.damage+=15;t.fireRate=Math.max(5,t.fireRate*.2|0);})],
+    [P('Semi-Auto',300,'Rate+50%',t=>{t.fireRate=Math.ceil(t.fireRate*.5);}),P('Full-Auto',450,'Rate+40%',t=>{t.fireRate=Math.ceil(t.fireRate*.6);}),P('Schnellfeuer',800,'Rate+40%',t=>{t.fireRate=Math.ceil(t.fireRate*.6);}),P('Elite',2000,'+$1/Schuss',t=>{t.moneyPerShot=1;}),P('Weltklasse',8000,'x3Dmg +$3',t=>{t.damage*=3;t.moneyPerShot=3;})],
+    [P('Nachtsicht',200,'Kein Malus',t=>{t.camoDet=1;}),P('Zoomscope',300,'Pierce+1',t=>{t.pierce++;}),P('Sprengmunition',900,'OnHit Explosion',t=>{t.isExplosive=1;t.blastRadius=20;t.onHitExplode=1;}),P('Supply-Drop',3000,'+$500/Runde',t=>{t.supplyDrop=1;t.supplyAmt=500;}),P('Minigun',7000,'Rate x10 Pierce10',t=>{t.fireRate=Math.max(2,t.fireRate/10|0);t.pierce=10;t.damage+=8;})],
+  ]},
+  {id:'ninja',name:'Ninja Affe',cost:500,icon:'🥷',color:'#2c2c2c',
+   range:120,fireRate:22,damage:1,projectileSpeed:12,projectileColor:'#aaa',projectileSize:4,pierce:2,camoDet:1,
+   upgrades:[
+    [P('Shuriken+',200,'Pierce+1',t=>{t.pierce++;}),P('Doppel',300,'2 Shurikens',t=>{t.dualShot=1;}),P('Blendung',500,'Kurz einfrieren',t=>{t.ninjaFreeze=1;t.ninjaFT=20;}),P('Sabotage',2000,'MOAB langsamer',t=>{t.sabotage=1;}),P('Master Ninja',8000,'+5Dmg Pierce15',t=>{t.damage+=5;t.pierce=15;t.fireRate=Math.max(5,t.fireRate*.5|0);})],
+    [P('Disziplin',200,'Rate+30%',t=>{t.fireRate=Math.ceil(t.fireRate*.7);}),P('Focus',300,'Rate+30%',t=>{t.fireRate=Math.ceil(t.fireRate*.7);}),P('Flash Bomb',600,'AoE Schaden',t=>{t.flashBomb=1;t.flashR=35;t.flashDmg=2;}),P('Nighthawk',1500,'Rate x2',t=>{t.fireRate=Math.max(7,t.fireRate/2|0);}),P('Grand Master',7000,'Rate x4 Pierce20',t=>{t.fireRate=Math.max(3,t.fireRate/4|0);t.pierce=20;})],
+    [P('Camo',150,'Camo-Erkennung',t=>{t.camoDet=1;}),P('Caltrops',300,'Stacheln',t=>{t.caltrops=1;}),P('Smoke',500,'Area Slow',t=>{t.smokeArea=1;}),P('Ninjutsu',1200,'+2Dmg',t=>{t.damage+=2;}),P('Assassin',5000,'+8Dmg',t=>{t.damage+=8;})],
+  ]},
   {id:'wizard',name:'Zauberer Affe',cost:450,icon:'🧙',color:'#6a0dad',
    range:130,fireRate:50,damage:2,projectileSpeed:5,projectileColor:'#bf00ff',projectileSize:7,pierce:1,
    upgrades:[
-    [{name:'Größere Magie',  cost:200,desc:'+1 Dmg Pierce+1',    apply:t=>{t.damage++;t.pierce++;}},
-     {name:'Arkane Magie',   cost:300,desc:'+1 Dmg',             apply:t=>{t.damage++;}},
-     {name:'Monkey Sense',   cost:600,desc:'Camo-Erkennung',     apply:t=>{t.camoDet=true;t.range+=20;}},
-     {name:'Vampiresk',      cost:2500,desc:'Heilt 1 Leben pro Treffer',apply:t=>{t.lifeSteal=true;}},
-     {name:'Prince of Darkness',cost:10000,desc:'+15 Dmg Pierce10 AoE',apply:t=>{t.damage+=15;t.pierce=10;t.wizardAoE=true;t.blastRadius=40;t.isExplosive=true;t.onHitExplode=true;}}],
-    [{name:'Verbesserter Zauber',cost:200,desc:'Feuerrate +30%',  apply:t=>{t.fireRate=Math.ceil(t.fireRate*0.7);}},
-     {name:'Zauberstab-Plus', cost:300,desc:'Feuerrate +30%',     apply:t=>{t.fireRate=Math.ceil(t.fireRate*0.7);}},
-     {name:'Feuerball',        cost:700,desc:'Feuerprojektil +3 Dmg AoE',apply:t=>{t.isFireball=true;t.damage+=3;t.isExplosive=true;t.onHitExplode=true;t.blastRadius=30;t.projectileColor='#ff4400';}},
-     {name:'Wall of Fire',     cost:2000,desc:'Feuermauer',       apply:t=>{t.wallOfFire=true;t.damage+=3;}},
-     {name:'Archmage',         cost:9000,desc:'+10 Dmg x3 Feuerrate',apply:t=>{t.damage+=10;t.fireRate=Math.max(5,Math.floor(t.fireRate/3));}}],
-    [{name:'Blitz-Schock',  cost:250,desc:'+1 Dmg',               apply:t=>{t.damage++;}},
-     {name:'Tornado',       cost:400,desc:'Wirbelwind',            apply:t=>{t.tornado=true;}},
-     {name:'Tempest Tornado',cost:800,desc:'Großer Wirbelwind',   apply:t=>{t.damage+=2;t.pierce+=4;}},
-     {name:'Shimmer',        cost:1500,desc:'+3 Dmg',              apply:t=>{t.damage+=3;}},
-     {name:'Summon Phoenix', cost:8000,desc:'+12 Dmg AoE Feuer',  apply:t=>{t.phoenix=true;t.damage+=12;t.isExplosive=true;t.onHitExplode=true;t.blastRadius=50;}}],
+    [P('Größere Magie',200,'+1Dmg Pierce+1',t=>{t.damage++;t.pierce++;}),P('Arkane Magie',300,'+1Dmg',t=>{t.damage++;}),P('Monkey Sense',600,'Camo+Range',t=>{t.camoDet=1;t.range+=20;}),P('Vampiresk',2500,'Leben stehlen',t=>{t.lifeSteal=1;}),P('Prince of Darkness',10000,'+15Dmg AoE',t=>{t.damage+=15;t.pierce=10;t.isExplosive=1;t.onHitExplode=1;t.blastRadius=40;})],
+    [P('Zauberstab+',200,'Rate+30%',t=>{t.fireRate=Math.ceil(t.fireRate*.7);}),P('Stab Plus',300,'Rate+30%',t=>{t.fireRate=Math.ceil(t.fireRate*.7);}),P('Feuerball',700,'+3Dmg AoE',t=>{t.isFireball=1;t.damage+=3;t.isExplosive=1;t.onHitExplode=1;t.blastRadius=30;t.projectileColor='#ff4400';}),P('Wall of Fire',2000,'+3Dmg',t=>{t.damage+=3;}),P('Archmage',9000,'+10Dmg Rate x3',t=>{t.damage+=10;t.fireRate=Math.max(5,t.fireRate/3|0);})],
+    [P('Blitz',250,'+1Dmg',t=>{t.damage++;}),P('Tornado',400,'Wirbelsturm',t=>{t.tornado=1;}),P('Tempest',800,'+2Dmg Pierce+4',t=>{t.damage+=2;t.pierce+=4;}),P('Shimmer',1500,'+3Dmg',t=>{t.damage+=3;}),P('Phoenix',8000,'+12Dmg AoE',t=>{t.phoenix=1;t.damage+=12;t.isExplosive=1;t.onHitExplode=1;t.blastRadius=50;})],
   ]},
-
-  // ── SUPER MONKEY ──
   {id:'super',name:'Super Affe',cost:2500,icon:'🦸',color:'#e74c3c',
    range:160,fireRate:6,damage:3,projectileSpeed:16,projectileColor:'#ff4400',projectileSize:4,pierce:1,
    upgrades:[
-    [{name:'Laser Blasts',  cost:800,desc:'+2 Dmg',              apply:t=>{t.damage+=2;t.projectileColor='#ff0000';}},
-     {name:'Plasma Blasts', cost:1500,desc:'+4 Dmg',             apply:t=>{t.damage+=4;t.projectileColor='#ff00ff';}},
-     {name:'Sun Avatar',    cost:5000,desc:'+8 Dmg Pierce5',     apply:t=>{t.damage+=8;t.pierce=5;t.projectileColor='#ffcc00';}},
-     {name:'Sun Temple',    cost:20000,desc:'+15 Dmg Pierce10',  apply:t=>{t.damage+=15;t.pierce=10;t.spreadTriple=true;}},
-     {name:'True Sun God',  cost:50000,desc:'+30 Dmg Pierce20',  apply:t=>{t.damage+=30;t.pierce=20;t.fireRate=Math.max(2,Math.floor(t.fireRate/2));}}],
-    [{name:'Super Range',  cost:1000,desc:'Reichweite +40',      apply:t=>{t.range+=40;}},
-     {name:'Epic Range',   cost:2000,desc:'Reichweite +40',      apply:t=>{t.range+=40;}},
-     {name:'Robo Monkey',  cost:4000,desc:'2x schießen',         apply:t=>{t.dualShot=true;}},
-     {name:'Tech Terror',  cost:10000,desc:'+10 Dmg AoE',        apply:t=>{t.damage+=10;t.isExplosive=true;t.onHitExplode=true;t.blastRadius=35;}},
-     {name:'The Anti-Bloon',cost:40000,desc:'+20 Dmg',          apply:t=>{t.damage+=20;t.pierce=30;}}],
-    [{name:'Knockback',    cost:600,desc:'Knockback',             apply:t=>{t.knockback=true;}},
-     {name:'Ultravision',  cost:1200,desc:'Reichweite +50',      apply:t=>{t.range+=50;}},
-     {name:'Dark Knight',  cost:3500,desc:'+5 Dmg',              apply:t=>{t.damage+=5;}},
-     {name:'Dark Champion',cost:12000,desc:'+10 Dmg Pierce10',   apply:t=>{t.damage+=10;t.pierce=10;}},
-     {name:'Legend of Knight',cost:35000,desc:'+20 Dmg Pierce25',apply:t=>{t.damage+=20;t.pierce=25;}}],
+    [P('Laser Blasts',800,'+2Dmg',t=>{t.damage+=2;t.projectileColor='#ff0000';}),P('Plasma Blasts',1500,'+4Dmg',t=>{t.damage+=4;t.projectileColor='#ff00ff';}),P('Sun Avatar',5000,'+8Dmg Pierce5',t=>{t.damage+=8;t.pierce=5;t.projectileColor='#ffcc00';}),P('Sun Temple',20000,'+15Dmg Pierce10',t=>{t.damage+=15;t.pierce=10;t.spreadTriple=1;}),P('True Sun God',50000,'+30Dmg Pierce20',t=>{t.damage+=30;t.pierce=20;t.fireRate=Math.max(2,t.fireRate/2|0);})],
+    [P('Super Range',1000,'+40 Range',t=>{t.range+=40;}),P('Epic Range',2000,'+40 Range',t=>{t.range+=40;}),P('Robo Monkey',4000,'2x Schuss',t=>{t.dualShot=1;}),P('Tech Terror',10000,'+10Dmg AoE',t=>{t.damage+=10;t.isExplosive=1;t.onHitExplode=1;t.blastRadius=35;}),P('Anti-Bloon',40000,'+20Dmg Pierce30',t=>{t.damage+=20;t.pierce=30;})],
+    [P('Knockback',600,'Knockback',t=>{t.knockback=1;}),P('Ultravision',1200,'Range+50 Camo',t=>{t.range+=50;t.camoDet=1;}),P('Dark Knight',3500,'+5Dmg',t=>{t.damage+=5;}),P('Dark Champion',12000,'+10Dmg Pierce10',t=>{t.damage+=10;t.pierce=10;}),P('Legend',35000,'+20Dmg Pierce25',t=>{t.damage+=20;t.pierce=25;})],
   ]},
-
-  // ── MORTAR ──
   {id:'mortar',name:'Mörser',cost:700,icon:'🔫',color:'#556b2f',
-   range:999,fireRate:95,damage:2,projectileSpeed:9,projectileColor:'#666',projectileSize:8,pierce:1,isExplosive:true,blastRadius:50,isMortar:true,
+   range:999,fireRate:95,damage:2,projectileSpeed:9,projectileColor:'#666',projectileSize:8,pierce:1,isExplosive:1,blastRadius:50,isMortar:1,
    upgrades:[
-    [{name:'Bigger Blast',   cost:300,desc:'Radius +20',          apply:t=>{t.blastRadius+=20;}},
-     {name:'Bloon Buster',   cost:500,desc:'+2 Dmg',             apply:t=>{t.damage+=2;}},
-     {name:'Heavy Shells',   cost:900,desc:'+3 Dmg Radius+15',   apply:t=>{t.damage+=3;t.blastRadius+=15;}},
-     {name:'Artillery Battery',cost:2500,desc:'Feuerrate x2',    apply:t=>{t.fireRate=Math.max(20,Math.floor(t.fireRate/2));}},
-     {name:'The Biggest One',cost:8000,desc:'+15 Dmg Radius+40', apply:t=>{t.damage+=15;t.blastRadius+=40;}}],
-    [{name:'Faster Reload',cost:250,desc:'Feuerrate +25%',        apply:t=>{t.fireRate=Math.ceil(t.fireRate*0.75);}},
-     {name:'Rapid Reload',  cost:400,desc:'Feuerrate +25%',       apply:t=>{t.fireRate=Math.ceil(t.fireRate*0.75);}},
-     {name:'Mortar Mauler', cost:700,desc:'x5 vs MOAB',           apply:t=>{t.moabMauler=true;t.damage+=2;}},
-     {name:'Pop & Awe',     cost:2000,desc:'Blendet alle kurz',   apply:t=>{t.popAndAwe=true;}},
-     {name:'The Bloon Solver',cost:6500,desc:'+10 Dmg x2 Feuerrate',apply:t=>{t.damage+=10;t.fireRate=Math.max(15,Math.floor(t.fireRate/2));}}],
-    [{name:'Shell Shock',   cost:300,desc:'Knockback',             apply:t=>{t.knockback=true;}},
-     {name:'Signal Flare',  cost:500,desc:'Camo-Erkennung',       apply:t=>{t.camoDet=true;}},
-     {name:'Shattering Shells',cost:900,desc:'+3 Dmg',            apply:t=>{t.damage+=3;}},
-     {name:'Flashbang',     cost:2000,desc:'Kurzes Einfrieren',    apply:t=>{t.morterFreeze=true;t.morterFreezeTime=40;}},
-     {name:'MOAB Assassin', cost:8000,desc:'+20 Dmg vs MOAB',     apply:t=>{t.damage+=10;t.moabMauler=true;t.moabMulti=15;}}],
+    [P('Bigger Blast',300,'Radius+20',t=>{t.blastRadius+=20;}),P('Bloon Buster',500,'+2Dmg',t=>{t.damage+=2;}),P('Heavy Shells',900,'+3Dmg Radius+15',t=>{t.damage+=3;t.blastRadius+=15;}),P('Artillery Battery',2500,'Rate x2',t=>{t.fireRate=Math.max(20,t.fireRate/2|0);}),P('The Biggest One',8000,'+15Dmg Radius+40',t=>{t.damage+=15;t.blastRadius+=40;})],
+    [P('Faster Reload',250,'Rate+25%',t=>{t.fireRate=Math.ceil(t.fireRate*.75);}),P('Rapid Reload',400,'Rate+25%',t=>{t.fireRate=Math.ceil(t.fireRate*.75);}),P('MOAB Mauler',700,'x5 vs MOAB',t=>{t.moabMauler=1;t.damage+=2;}),P('Pop & Awe',2000,'Alle kurz eingefroren',t=>{t.popAndAwe=1;}),P('Bloon Solver',6500,'+10Dmg Rate x2',t=>{t.damage+=10;t.fireRate=Math.max(15,t.fireRate/2|0);})],
+    [P('Shell Shock',300,'Knockback',t=>{t.knockback=1;}),P('Signal Flare',500,'Camo-Erkennung',t=>{t.camoDet=1;}),P('Shattering Shells',900,'+3Dmg',t=>{t.damage+=3;}),P('Flashbang',2000,'Freeze on hit',t=>{t.mortarFreeze=1;t.mortarFreezeTime=40;}),P('MOAB Assassin',8000,'+20Dmg x15 MOAB',t=>{t.damage+=10;t.moabMauler=1;t.moabMulti=15;})],
+  ]},
+  {id:'sub',name:'Affen-U-Boot',cost:425,icon:'🚢',color:'#1a6b8a',
+   range:130,fireRate:28,damage:1,projectileSpeed:10,projectileColor:'#00ffff',projectileSize:4,pierce:1,
+   upgrades:[
+    [P('Schnellere Torpedos',200,'Rate+30%',t=>{t.fireRate=Math.ceil(t.fireRate*.7);}),P('Doppel-Torpedos',300,'2 Torpedos',t=>{t.dualShot=1;}),P('Seekers',600,'Torpedos suchen',t=>{t.seekerShot=1;}),P('Pre-Emptive Strike',2500,'+5Dmg MOAB+',t=>{t.damage+=5;t.moabMauler=1;}),P('Sub Commander',8000,'Alle nahe Türme +Dmg',t=>{t.subCommander=1;t.damage+=10;})],
+    [P('Sonar Pulse',200,'Camo-Erkennung',t=>{t.camoDet=1;}),P('Advanced Intel',300,'Reichweite=Karte',t=>{t.range=999;}),P('Submerge',600,'Alle einfrieren Karte',t=>{t.submergeFreeze=1;}),P('Bloontonium Lab',2000,'Bio-Gift',t=>{t.bioPoison=1;t.bioDmg=1;}),P('Energizer',9000,'Rate+für alle',t=>{t.energizer=1;t.damage+=8;})],
+    [P('Viral Frost',300,'Einfrieren AoE',t=>{t.viralFrost=1;}),P('Nano Bombs',500,'+2Dmg',t=>{t.damage+=2;}),P('Marine',700,'+3Dmg Pierce+3',t=>{t.damage+=3;t.pierce+=3;}),P('First Strike',2500,'MOAB Riesenschaden',t=>{t.firstStrike=1;t.moabMauler=1;t.moabMulti=30;}),P('Sub Destroyer',7500,'+10Dmg Pierce10',t=>{t.damage+=10;t.pierce=10;})],
+  ]},
+  {id:'buccaneer',name:'Kanonenboot',cost:500,icon:'⚓',color:'#1a3a8a',
+   range:130,fireRate:55,damage:1,projectileSpeed:9,projectileColor:'#888',projectileSize:7,pierce:4,
+   upgrades:[
+    [P('Crow\'s Nest',200,'Camo-Erkennung',t=>{t.camoDet=1;}),P('Faster Shooting',250,'Rate+30%',t=>{t.fireRate=Math.ceil(t.fireRate*.7);}),P('Destroyer',600,'+2Dmg Pierce+4',t=>{t.damage+=2;t.pierce+=4;}),P('Aircraft Carrier',3000,'3x Schuss',t=>{t.spreadTriple=1;t.damage+=3;}),P('Pirate Lord',12000,'+10Dmg MOAB+',t=>{t.damage+=10;t.moabMauler=1;t.pierce=15;})],
+    [P('Triple Guns',200,'3 Schüsse',t=>{t.tripleGun=1;}),P('Cannon Ship',350,'+2Dmg AoE',t=>{t.damage+=2;t.isExplosive=1;t.onHitExplode=1;t.blastRadius=25;}),P('Monkey Pirates',700,'Greift MOAB',t=>{t.moabGrab=1;}),P('Merchant Marine',2000,'+$200/Runde',t=>{t.supplyDrop=1;t.supplyAmt=200;}),P('Carrier Flagship',10000,'+15Dmg',t=>{t.damage+=15;t.pierce=20;})],
+    [P('Faster Reload',200,'Rate+25%',t=>{t.fireRate=Math.ceil(t.fireRate*.75);}),P('Grape Shot',350,'Spread Schuss',t=>{t.spreadShot=8;}),P('Hot Shot',600,'+2Dmg',t=>{t.damage+=2;}),P('Airstrike',2500,'Bombenangriff',t=>{t.airStrike=1;}),P('Trade Empire',8000,'+$1000/Runde',t=>{t.supplyDrop=1;t.supplyAmt=1000;})],
+  ]},
+  {id:'ace',name:'Kampfjet',cost:800,icon:'✈️',color:'#666',
+   range:999,fireRate:60,damage:1,projectileSpeed:7,projectileColor:'#aaa',projectileSize:5,pierce:2,isAce:1,spreadShot:8,
+   upgrades:[
+    [P('Rapid Fire',350,'Rate+40%',t=>{t.fireRate=Math.ceil(t.fireRate*.6);}),P('Lots More Darts',400,'16 Darts',t=>{t.spreadShot=16;}),P('Fighter Plane',800,'+2Dmg',t=>{t.damage+=2;t.spreadShot=12;}),P('Operation: Dart Storm',3500,'+5Dmg Pierce10',t=>{t.damage+=5;t.pierce=10;t.spreadShot=24;}),P('Sky Shredder',12000,'+15Dmg Dauerfeuer',t=>{t.damage+=15;t.fireRate=Math.max(10,t.fireRate/3|0);t.pierce=20;})],
+    [P('Lots More Bombs',400,'Bomben werfen',t=>{t.aceBombs=1;t.aceBombDmg=2;t.aceBombR=40;}),P('Fighter Ace',500,'Rate+30%',t=>{t.fireRate=Math.ceil(t.fireRate*.7);}),P('Neva-Miss Targeting',800,'Präzision +2Dmg',t=>{t.damage+=2;}),P('Spectre',4000,'+5Dmg Bomben',t=>{t.damage+=5;t.aceBombs=1;t.aceBombDmg=5;t.aceBombR=55;}),P('Flying Fortress',20000,'+20Dmg AoE',t=>{t.damage+=20;t.aceBombDmg=15;t.pierce=25;})],
+    [P('Spy Plane',200,'Camo-Erkennung',t=>{t.camoDet=1;}),P('Striker Jones',300,'+2Dmg',t=>{t.damage+=2;}),P('Homeland Air Force',600,'+$200/Runde',t=>{t.supplyDrop=1;t.supplyAmt=200;}),P('Ground Zero',3500,'Riesenbombe',t=>{t.groundZero=1;}),P('Avenger',8000,'+10Dmg Pierce15',t=>{t.damage+=10;t.pierce=15;})],
+  ]},
+  {id:'heli',name:'Heli-Pilot',cost:1600,icon:'🚁',color:'#446',
+   range:160,fireRate:18,damage:1,projectileSpeed:10,projectileColor:'#aaf',projectileSize:4,pierce:2,isHeli:1,spreadTriple:1,
+   upgrades:[
+    [P('Rapid Fire',400,'Rate+40%',t=>{t.fireRate=Math.ceil(t.fireRate*.6);}),P('Lots More Darts',500,'4 Schüsse',t=>{t.quadShot=1;}),P('Apache Dartship',1200,'+3Dmg',t=>{t.damage+=3;t.fireRate=Math.max(6,t.fireRate*.7|0);}),P('Apache Prime',5000,'+8Dmg Pierce8',t=>{t.damage+=8;t.pierce=8;}),P('Special Poperations',30000,'+15Dmg',t=>{t.damage+=15;t.pierce=20;t.fireRate=Math.max(3,t.fireRate/2|0);})],
+    [P('Bigger Jets',300,'Range+30',t=>{t.range+=30;}),P('IFR',400,'Camo-Erkennung',t=>{t.camoDet=1;}),P('Downdraft',800,'Bläst Bloons zurück',t=>{t.downdraft=1;}),P('Support Chinook',3500,'+$500/Runde',t=>{t.supplyDrop=1;t.supplyAmt=500;}),P('Comanche Defense',15000,'+10Dmg Turrets',t=>{t.comanches=1;t.damage+=10;})],
+    [P('Pursuit',300,'Verfolgt Bloons',t=>{t.heliPursuit=1;}),P('Razor Rotors',500,'+2Dmg',t=>{t.damage+=2;}),P('Hawk',800,'Rate+30%',t=>{t.fireRate=Math.ceil(t.fireRate*.7);}),P('Comanche Commander',2500,'+3Dmg Pierce',t=>{t.damage+=3;t.pierce+=3;}),P('Adora Sacrifice',9000,'+12Dmg',t=>{t.damage+=12;t.pierce=15;})],
+  ]},
+  {id:'dartling',name:'Dartling Gunner',cost:1700,icon:'🎮',color:'#7b3f00',
+   range:999,fireRate:4,damage:1,projectileSpeed:18,projectileColor:'#ff8800',projectileSize:4,pierce:1,isDartling:1,
+   upgrades:[
+    [P('Focused Firing',500,'Präziser',t=>{t.pierce+=1;}),P('Laser Shock',700,'+1Dmg Pierce+1',t=>{t.damage++;t.pierce++;}),P('Laser Cannon',1500,'+2Dmg Pierce+3',t=>{t.damage+=2;t.pierce+=3;t.projectileColor='#ff0000';}),P('Ray of Doom',8000,'+5Dmg Pierce999',t=>{t.damage+=5;t.pierce=999;t.rayOfDoom=1;}),P('Mk5',30000,'+15Dmg',t=>{t.damage+=15;t.pierce=999;})],
+    [P('Wider Swivel',500,'Breiter Schwenk',t=>{t.range=999;}),P('More Missiles',700,'Raketen',t=>{t.dartlingMissile=1;t.missileR=30;}),P('Powerful Darts',1200,'+2Dmg',t=>{t.damage+=2;}),P('Hydra Rocket Pods',5000,'+5Dmg AoE',t=>{t.damage+=5;t.isExplosive=1;t.onHitExplode=1;t.blastRadius=35;}),P('BADS',25000,'+10Dmg',t=>{t.damage+=10;t.fireRate=Math.max(2,t.fireRate/2|0);})],
+    [P('Faster Barrel Spin',400,'Rate+30%',t=>{t.fireRate=Math.max(2,t.fireRate*.7|0);}),P('Faster Swivel',600,'Rate+30%',t=>{t.fireRate=Math.max(2,t.fireRate*.7|0);}),P('AMXX Rounds',1200,'+3Dmg',t=>{t.damage+=3;}),P('Ultra-Juggernaut',4000,'+5Dmg Pierce+5',t=>{t.damage+=5;t.pierce+=5;}),P('Bloon Exclusion Zone',20000,'+15Dmg',t=>{t.damage+=15;t.pierce=999;})],
+  ]},
+  {id:'alchemist',name:'Alchemist',cost:550,icon:'⚗️',color:'#7b2d8b',
+   range:110,fireRate:65,damage:1,projectileSpeed:6,projectileColor:'#aa00ff',projectileSize:8,pierce:2,isAlchemist:1,
+   upgrades:[
+    [P('Larger Potions',250,'Pierce+2',t=>{t.pierce+=2;}),P('Stronger Stimulant',400,'Buff besser',t=>{t.alchBuff=2;}),P('Permanent Brew',800,'Buff permanent',t=>{t.alchBuff=3;}),P('Stronger Acid',2500,'+3Dmg DOT',t=>{t.damage+=3;t.glueDot=1;t.glueDotDmg=2;}),P('Acidic Mixture Dip',8000,'+8Dmg DOT stark',t=>{t.damage+=8;t.glueDotDmg=5;})],
+    [P('Faster Throwing',200,'Rate+30%',t=>{t.fireRate=Math.ceil(t.fireRate*.7);}),P('Acidic Mixture',350,'+2Dmg',t=>{t.damage+=2;}),P('Lead to Gold',700,'+$5 pro Treffer',t=>{t.goldTouch=1;}),P('Rubber to Gold',2000,'+$15/MOAB',t=>{t.moabGold=1;}),P('Total Transformation',8000,'+10Dmg',t=>{t.damage+=10;t.pierce=10;})],
+    [P('Bigger Potions',200,'Radius+20',t=>{t.blastRadius=(t.blastRadius||0)+20;t.isExplosive=1;t.onHitExplode=1;}),P('Stronger Acid',300,'+1Dmg',t=>{t.damage++;}),P('Turbo Charge',600,'Puffs nahe Türme',t=>{t.turboCharge=1;}),P('Overclock',2500,'Buff: Rate x2 naher Turm',t=>{t.overclock=1;}),P('Unstable Concoction',9000,'+15Dmg AoE',t=>{t.damage+=15;t.blastRadius=50;t.isExplosive=1;t.onHitExplode=1;})],
+  ]},
+  {id:'druid',name:'Druide',cost:450,icon:'🌿',color:'#2d8b2d',
+   range:120,fireRate:45,damage:1,projectileSpeed:7,projectileColor:'#00ff88',projectileSize:6,pierce:1,isDruid:1,
+   upgrades:[
+    [P('Hard Thorns',150,'Pierce+1',t=>{t.pierce++;}),P('Brambles',250,'+1Dmg Pierce+1',t=>{t.damage++;t.pierce++;}),P('Druid of the Jungle',500,'+2Dmg',t=>{t.damage+=2;}),P('Jungle\'s Bounty',2000,'+$200/Runde Karte',t=>{t.supplyDrop=1;t.supplyAmt=200;}),P('Jungle\'s Wall',6000,'+8Dmg Dornen',t=>{t.damage+=8;t.thornWall=1;})],
+    [P('Thorn Swarm',200,'Rate+30%',t=>{t.fireRate=Math.ceil(t.fireRate*.7);}),P('Heart of Thunder',400,'Blitz',t=>{t.lightning=1;t.lightningJumps=2;}),P('Druid of the Storm',800,'+3Dmg Blitz',t=>{t.damage+=3;t.lightningJumps=4;}),P('Ball Lightning',2500,'+5Dmg Blitz Kugel',t=>{t.damage+=5;t.ballLightning=1;}),P('Superstorm',10000,'+12Dmg Blitzgewitter',t=>{t.damage+=12;t.lightningJumps=10;t.superstorm=1;})],
+    [P('Heart of Oak',200,'+1Dmg',t=>{t.damage++;}),P('Druid of the Plains',350,'Pierce+3',t=>{t.pierce+=3;}),P('Poplust',600,'Bufft Druiden',t=>{t.poplust=1;}),P('Spirit of the Forest',2500,'+3Dmg',t=>{t.damage+=3;}),P('Avatar of Wrath',8000,'+10Dmg Rasend',t=>{t.damage+=10;t.fireRate=Math.max(8,t.fireRate*.4|0);t.wrath=1;})],
+  ]},
+  {id:'banana',name:'Bananenfarm',cost:1250,icon:'🍌',color:'#f0c030',
+   range:0,fireRate:9999,damage:0,projectileSpeed:0,projectileColor:'#f0c030',projectileSize:0,pierce:0,isFarm:1,
+   supplyDrop:1,supplyAmt:80,farmPerRound:80,
+   upgrades:[
+    [P('Longer Bananas',300,'$120/Runde',t=>{t.farmPerRound=120;t.supplyAmt=120;}),P('Banana Plantation',900,'$200/Runde',t=>{t.farmPerRound=200;t.supplyAmt=200;}),P('Banana Research Facility',3000,'$400/Runde',t=>{t.farmPerRound=400;t.supplyAmt=400;}),P('Banana Central',5000,'$1000/Runde',t=>{t.farmPerRound=1000;t.supplyAmt=1000;}),P('Monkey Wall Street',50000,'$4000+Runde',t=>{t.farmPerRound=4000;t.supplyAmt=4000;})],
+    [P('More Bananas',300,'Alle 15s $50',t=>{t.farmTick=50;t.farmTickRate=900;}),P('Banana Salvage',500,'Alle 15s $100',t=>{t.farmTick=100;}),P('Marketplace',1500,'Alle 10s $150',t=>{t.farmTick=150;t.farmTickRate=600;}),P('Central Market',3500,'Alle 10s $300',t=>{t.farmTick=300;}),P('IMF Loan',7500,'Sofort $10000 Kredit',t=>{t.imfLoan=1;})],
+    [P('Banana Boost',300,'+$50/Runde',t=>{t.farmPerRound+=50;t.supplyAmt+=50;}),P('Valuable Bananas',500,'+$100/Runde',t=>{t.farmPerRound+=100;t.supplyAmt+=100;}),P('Monkey Bank',2000,'Zinsen 15%/Runde',t=>{t.monkeyBank=1;}),P('IMF Loan',4000,'$10000 Kredit',t=>{t.imfLoan=1;}),P('Banana Investment',10000,'$5000/Runde',t=>{t.farmPerRound=5000;t.supplyAmt=5000;})],
+  ]},
+  {id:'spike',name:'Spike Factory',cost:1000,icon:'📍',color:'#8b0000',
+   range:60,fireRate:120,damage:1,projectileSpeed:0,projectileColor:'#8b0000',projectileSize:0,pierce:15,isSpikeFactory:1,spikeLife:600,
+   upgrades:[
+    [P('Bigger Stacks',400,'Pierce+20',t=>{t.pierce+=20;}),P('White Hot Spikes',600,'Pierce+20 Dmg+1',t=>{t.pierce+=20;t.damage++;}),P('Spiked Balls',1200,'+3Dmg Pierce+30',t=>{t.damage+=3;t.pierce+=30;}),P('Spiked Mines',3000,'+5Dmg AoE',t=>{t.damage+=5;t.spikeExplosive=1;t.blastRadius=40;}),P('Super Mines',10000,'+15Dmg Riesenmine',t=>{t.damage+=15;t.blastRadius=70;t.spikeExplosive=1;})],
+    [P('Faster Production',350,'Rate+50%',t=>{t.fireRate=Math.ceil(t.fireRate*.5);}),P('Even Faster',500,'Rate+50%',t=>{t.fireRate=Math.ceil(t.fireRate*.5);}),P('MOAB SHREDR',1000,'+5Dmg vs MOAB',t=>{t.moabMauler=1;t.damage+=3;}),P('Spike Storm',3000,'Alle 30s Stachelsturm',t=>{t.spikeStorm=1;}),P('Carpet of Spikes',10000,'Dauerhaft',t=>{t.carpetSpikes=1;t.fireRate=30;})],
+    [P('Long Reach',300,'Range+20',t=>{t.range+=20;}),P('Long Life Spikes',400,'Spike Dauer x2',t=>{t.spikeLife*=2;}),P('Long Reach II',600,'Range+20',t=>{t.range+=20;}),P('Caltrops',1500,'Stacheln überall',t=>{t.caltrops=1;}),P('Perma Spike',9000,'Ewig +10Dmg',t=>{t.permaspike=1;t.damage+=10;t.spikeLife=999999;})],
+  ]},
+  {id:'village',name:'Affen-Dorf',cost:1200,icon:'🏘️',color:'#8B7355',
+   range:100,fireRate:9999,damage:0,projectileSpeed:0,projectileColor:'transparent',projectileSize:0,pierce:0,isVillage:1,
+   upgrades:[
+    [P('Town Center',500,'Range+20 nahe Türme',t=>{t.range+=20;}),P('Monkey Commerce',700,'+$100/Runde',t=>{t.supplyDrop=1;t.supplyAmt=100;}),P('Monkey City',2500,'Nahe Türme Pierce+5',t=>{t.villageBuffPierce=5;}),P('Monkeyopolis',5000,'Viel Geld/Runde',t=>{t.supplyAmt=500;t.supplyDrop=1;}),P('Monkeyopolis+',20000,'$2000/Runde',t=>{t.supplyAmt=2000;})],
+    [P('Grow Blocker',300,'Camo-Erkennung',t=>{t.camoDet=1;t.villageCamo=1;}),P('Radar Scanner',500,'Alle nahe: Camo',t=>{t.villageRadar=1;}),P('Monkey Intelligence Bureau',2000,'Alle nahe: +Dmg',t=>{t.villageMIB=1;}),P('Call to Arms',7000,'Temp Buff alle',t=>{t.callToArms=1;}),P('Homeland Defense',30000,'Permanent Buff',t=>{t.homelandDef=1;})],
+    [P('Base Camp',300,'Range+15',t=>{t.range+=15;}),P('Jungle Drum',500,'Nahe Rate+10%',t=>{t.villageDrum=1;}),P('Hero Support',1200,'Nahe Dmg+1',t=>{t.villageBuff=1;}),P('Primary Training',3000,'Primary Türme +2Dmg',t=>{t.primaryTraining=1;}),P('Primary Expertise',10000,'Primary Türme +5Dmg',t=>{t.primaryTraining=2;t.villageBuff=2;})],
+  ]},
+  {id:'engineer',name:'Engineer Affe',cost:400,icon:'🔧',color:'#996633',
+   range:110,fireRate:32,damage:1,projectileSpeed:9,projectileColor:'#cc8800',projectileSize:4,pierce:1,
+   upgrades:[
+    [P('Larger Nails',200,'Pierce+2',t=>{t.pierce+=2;}),P('Faster Engineering',300,'Rate+35%',t=>{t.fireRate=Math.ceil(t.fireRate*.65);}),P('Sprockets',600,'+2Dmg Pierce+2',t=>{t.damage+=2;t.pierce+=2;}),P('Overclock',2500,'Turm bufft Nachbar',t=>{t.overclock=1;}),P('Ultraboost',8000,'Permanent Boost',t=>{t.ultraboost=1;t.damage+=5;})],
+    [P('Larger Service Area',250,'Range+20',t=>{t.range+=20;}),P('Sentries',400,'Sentry platzieren',t=>{t.sentry=1;t.sentryDmg=1;}),P('Sentry Expert',800,'Stärkere Sentries',t=>{t.sentryDmg=3;}),P('Sentry Champion',2500,'Kraftvolle Sentries',t=>{t.sentryDmg=6;t.sentryPierce=5;}),P('XXXL Trap',8000,'Riesige Falle',t=>{t.xxxlTrap=1;})],
+    [P('Duct Tape',200,'+1Dmg',t=>{t.damage++;}),P('Cleansing Foam',350,'Reinigt Camo',t=>{t.camoDet=1;}),P('Tack Sprayer',600,'Stacheln streuen',t=>{t.tackSpray=1;t.spreadShot=8;}),P('Inferno Ring',2000,'+4Dmg Feuer',t=>{t.damage+=4;t.isFlame=1;}),P('Bloon Trap',8000,'Falle frisst Bloons',t=>{t.bloonTrap=1;})],
   ]},
 ];
 
-// =====================================================================
-// WAVES
-// =====================================================================
-function makeWave(round) {
-  const bloons=[];
-  const r=round;
-  function add(type,count,interval=20,offset=0){
-    for(let i=0;i<count;i++) bloons.push({type,delay:offset+i*interval});
-  }
-  if(r<=2)       {add('red',8+r*4);}
-  else if(r<=4)  {add('red',10+r*3);add('blue',r*3,25,20);}
-  else if(r<=7)  {add('blue',r*5,20);add('green',r*2,30,30);}
-  else if(r<=10) {add('green',r*3,22);add('yellow',r*2,32,40);}
-  else if(r<=13) {add('yellow',r*3,20);add('pink',r*2,28,50);}
-  else if(r<=16) {add('pink',r*3,18);add('black',r,35);}
-  else if(r<=20) {add('black',r*2,20);add('pink',r,25,10);}
-  else if(r<=23) {add('ceramic',Math.floor(r*1.5),28);add('black',r,22,20);}
-  else if(r<=26) {add('ceramic',r*2,20);add('moab',Math.floor(r/6),90);}
-  else if(r<=29) {add('ceramic',r,22);add('moab',Math.floor(r/4),80);add('black',r/2|0,25,10);}
-  else           {add('moab',6,70);add('ceramic',25,14);add('pink',20,12,10);}
-  bloons.sort((a,b)=>a.delay-b.delay);
-  return bloons;
+// ===== WAVES (60 Runden) =====
+function makeWave(round){
+  const b=[],r=round;
+  function add(type,count,iv=20,off=0){for(let i=0;i<count;i++)b.push({type,delay:off+i*iv});}
+  if(r<=2)         {add('red',8+r*4);}
+  else if(r<=4)    {add('red',10+r*2);add('blue',r*3,25,20);}
+  else if(r<=7)    {add('blue',r*5,20);add('green',r*2,32,30);}
+  else if(r<=10)   {add('green',r*3,22);add('yellow',r*2,32,40);}
+  else if(r<=13)   {add('yellow',r*3,20);add('pink',r*2,28,50);}
+  else if(r<=16)   {add('pink',r*3,18);add('black',r,35);}
+  else if(r<=20)   {add('black',r*2,20);add('pink',r,24,10);}
+  else if(r<=25)   {add('ceramic',Math.ceil(r*1.5),26);add('black',r,22,20);}
+  else if(r<=28)   {add('ceramic',r*2,20);add('moab',Math.floor(r/7),90);}
+  else if(r<=32)   {add('moab',Math.floor(r/4),80);add('ceramic',r,22,10);}
+  else if(r<=36)   {add('moab',Math.floor(r/3),70);add('bfb',1,200);add('ceramic',r,18,10);}
+  else if(r<=40)   {add('bfb',Math.floor(r/8),150);add('moab',r/4|0,60);add('ceramic',r,14,20);}
+  else if(r<=44)   {add('bfb',Math.floor(r/6),120);add('zomg',1,300);add('moab',r/5|0,55);}
+  else if(r<=48)   {add('zomg',1,300);add('ddt',Math.floor(r/8),80);add('bfb',r/8|0,120);}
+  else if(r<=52)   {add('zomg',2,250);add('ddt',Math.floor(r/6),70);add('bfb',r/6|0,100);}
+  else if(r<=56)   {add('bad',1,500);add('zomg',2,200);add('ddt',r/4|0,60);}
+  else if(r<=58)   {add('bad',2,400);add('zomg',3,180);add('ddt',r/3|0,55);}
+  else             {add('bad',3,350);add('zomg',4,160);add('ddt',15,50);add('bfb',8,100,20);}
+  b.sort((a,z)=>a.delay-z.delay);
+  return b;
 }
 
-// =====================================================================
-// GAME STATE
-// =====================================================================
+// ===== STATE =====
 const canvas=document.getElementById('canvas');
 const ctx=canvas.getContext('2d');
-let currentMap=null;
-let state={};
-
-function initState(mapDef) {
-  currentMap=mapDef;
-  state={
-    lives:150, money:650, round:1, maxRound:30,
-    popped:0, towers:[], bloons:[], projectiles:[], particles:[], explosions:[],
-    spawnQueue:[], spawnTimer:0, waveActive:false,
-    gameOver:false, victory:false, speed:1,
-    selectedTowerType:null, selectedTower:null, hoveredPos:null,
-    frame:0,
-  };
+let currentMap=null,state={};
+function initState(map){
+  currentMap=map;
+  state={lives:200,money:650,round:1,maxRound:60,popped:0,
+    towers:[],bloons:[],projectiles:[],particles:[],explosions:[],spikes:[],
+    spawnQueue:[],spawnTimer:0,waveActive:false,
+    gameOver:false,victory:false,speed:1,
+    selectedTowerType:null,selectedTower:null,hoveredPos:null,frame:0};
 }
 
-// =====================================================================
-// PATH HELPERS
-// =====================================================================
-function getPath() { return currentMap.path; }
-
-function posOnPath(dist) {
-  const PATH=getPath();
-  let rem=dist;
-  for(let i=1;i<PATH.length;i++){
-    const dx=PATH[i].x-PATH[i-1].x, dy=PATH[i].y-PATH[i-1].y;
-    const seg=Math.sqrt(dx*dx+dy*dy);
-    if(rem<=seg){const t=rem/seg;return{x:PATH[i-1].x+dx*t,y:PATH[i-1].y+dy*t,done:false};}
+// ===== PATH HELPERS =====
+function getPath(){return currentMap.path;}
+function posOnPath(dist){
+  const P=getPath();let rem=dist;
+  for(let i=1;i<P.length;i++){
+    const dx=P[i].x-P[i-1].x,dy=P[i].y-P[i-1].y,seg=Math.sqrt(dx*dx+dy*dy);
+    if(rem<=seg){const t=rem/seg;return{x:P[i-1].x+dx*t,y:P[i-1].y+dy*t,done:false};}
     rem-=seg;
   }
-  return{x:PATH[PATH.length-1].x,y:PATH[PATH.length-1].y,done:true};
+  return{x:P[P.length-1].x,y:P[P.length-1].y,done:true};
 }
-
-function isOnPath(x,y,margin=20) {
-  const PATH=getPath();
-  for(let i=1;i<PATH.length;i++){
-    const ax=PATH[i-1].x,ay=PATH[i-1].y,bx=PATH[i].x,by=PATH[i].y;
-    const dx=bx-ax,dy=by-ay,len2=dx*dx+dy*dy;
-    const t=Math.max(0,Math.min(1,((x-ax)*dx+(y-ay)*dy)/len2));
-    const px=ax+t*dx,py=ay+t*dy;
-    if(Math.sqrt((x-px)**2+(y-py)**2)<margin) return true;
+function isOnPath(x,y,m=20){
+  const P=getPath();
+  for(let i=1;i<P.length;i++){
+    const ax=P[i-1].x,ay=P[i-1].y,bx=P[i].x,by=P[i].y,dx=bx-ax,dy=by-ay,l2=dx*dx+dy*dy;
+    const t=Math.max(0,Math.min(1,((x-ax)*dx+(y-ay)*dy)/l2));
+    if(Math.sqrt((x-ax-t*dx)**2+(y-ay-t*dy)**2)<m)return true;
   }
   return false;
 }
 
-// =====================================================================
-// UPGRADE SYSTEM
-// =====================================================================
-function canUpgradePath(tower,path) {
-  const levels=tower.upgrades;
-  if(levels[path]>=5) return false;
-  const next=levels[path]+1;
-  const nonZero=levels.filter(l=>l>0).length;
-  if(levels[path]===0&&nonZero>=2) return false;
-  if(next>=3&&levels.some((l,i)=>i!==path&&l>=3)) return false;
-  if(levels.some((l,i)=>i!==path&&l>=3)&&next>2) return false;
+// ===== UPGRADE SYSTEM =====
+function canUpgradePath(t,path){
+  const lv=t.upgrades;
+  if(lv[path]>=5)return false;
+  const next=lv[path]+1;
+  if(lv[path]===0&&lv.filter(l=>l>0).length>=2)return false;
+  if(next>=3&&lv.some((l,i)=>i!==path&&l>=3))return false;
+  if(lv.some((l,i)=>i!==path&&l>=3)&&next>2)return false;
   return true;
 }
-
-function applyUpgrade(tower,path) {
+function applyUpgrade(tower,path){
   const def=TOWER_DEFS.find(d=>d.id===tower.typeId);
-  const level=tower.upgrades[path];
-  def.upgrades[path][level].apply(tower);
+  def.upgrades[path][tower.upgrades[path]].apply(tower);
   tower.upgrades[path]++;
 }
-
-function upgradeCost(tower,path) {
+function upgradeCost(tower,path){
   const def=TOWER_DEFS.find(d=>d.id===tower.typeId);
-  const level=tower.upgrades[path];
-  if(level>=5) return Infinity;
-  return def.upgrades[path][level].cost;
+  return tower.upgrades[path]>=5?Infinity:def.upgrades[path][tower.upgrades[path]].cost;
 }
 
-// =====================================================================
-// BLOON
-// =====================================================================
+// ===== BLOON =====
 let bloonId=0;
-function spawnBloon(type) {
-  const bt=BLOON_TYPES[type];
-  const p0=getPath()[0];
+function spawnBloon(type){
+  const bt=BLOON_TYPES[type],p0=getPath()[0];
   return{id:bloonId++,type,hp:bt.hp,maxHp:bt.hp,speed:bt.speed,dist:0,x:p0.x,y:p0.y,frozenTimer:0,gluedTimer:0,slowFactor:1,glueDot:false,glueDotDmg:1};
 }
 
-// =====================================================================
-// TOWER
-// =====================================================================
+// ===== TOWER =====
 let towerUid=0;
-function createTower(def,x,y) {
-  return{...def, uid:towerUid++, typeId:def.id, x, y, angle:0, cooldown:0, upgrades:[0,0,0], moneyPerShot:0, supplyDrop:false, supplyAmt:200};
+function createTower(def,x,y){
+  const t={...def,uid:towerUid++,typeId:def.id,x,y,angle:0,cooldown:0,upgrades:[0,0,0],moneyPerShot:0,supplyDrop:def.supplyDrop||0,supplyAmt:def.supplyAmt||0,farmPerRound:def.farmPerRound||0};
+  if(def.isFarm&&def.imfLoan){state.money+=10000;state.lives=Math.min(state.lives+25,200);}
+  return t;
 }
 
-// =====================================================================
-// PROJECTILE
-// =====================================================================
+// ===== PROJECTILE =====
 let projId=0;
-function createProjectile(tower,dx,dy,targetId) {
-  return{
-    id:projId++, x:tower.x, y:tower.y, dx, dy,
-    speed:tower.projectileSpeed, damage:tower.damage, pierce:tower.pierce,
-    hit:new Set(), towerRef:tower, targetId:targetId||null,
-    isExplosive:tower.isExplosive||false, onHitExplode:tower.onHitExplode||false,
-    blastRadius:tower.blastRadius||0, isGlue:tower.isGlue||false,
-    slowFactor:tower.slowFactor||1, slowDuration:tower.slowDuration||0,
-    glueDot:tower.glueDot||false, glueDotDmg:tower.glueDotDmg||1,
-    moabMauler:tower.moabMauler||false, moabElim:tower.moabElim||false,
-    moabMulti:tower.moabMulti||1,
-    color:tower.projectileColor, size:tower.projectileSize,
-    isFlash:tower.flashBomb||false, flashR:tower.flashBombR||0, flashDmg:tower.flashBombDmg||0,
-    ninjaFreeze:tower.ninjaFreeze||false, ninjaFreezeTime:tower.ninjaFreezeTime||0,
-    morterFreeze:tower.morterFreeze||false, morterFreezeTime:tower.morterFreezeTime||0,
-    isMortar:tower.isMortar||false,
-  };
+function createProjectile(tower,dx,dy,targetId){
+  return{id:projId++,x:tower.x,y:tower.y,dx,dy,speed:tower.projectileSpeed,damage:tower.damage,pierce:tower.pierce,
+    hit:new Set(),towerRef:tower,targetId:targetId||null,
+    isExplosive:tower.isExplosive||0,onHitExplode:tower.onHitExplode||0,blastRadius:tower.blastRadius||0,
+    isGlue:tower.isGlue||0,slowFactor:tower.slowFactor||1,slowDuration:tower.slowDuration||0,
+    glueDot:tower.glueDot||0,glueDotDmg:tower.glueDotDmg||1,
+    moabMauler:tower.moabMauler||0,moabElim:tower.moabElim||0,moabMulti:tower.moabMulti||1,
+    color:tower.projectileColor,size:tower.projectileSize,
+    ninjaFT:tower.ninjaFreeze?tower.ninjaFT:0,
+    mortarFT:tower.mortarFreeze?tower.mortarFreezeTime:0,
+    lightning:tower.lightning||0,lightningJumps:tower.lightningJumps||0,
+    isMortar:tower.isMortar||0,isAce:tower.isAce||0,
+    aceBombs:tower.aceBombs||0,aceBombDmg:tower.aceBombDmg||0,aceBombR:tower.aceBombR||0};
 }
 
-// =====================================================================
-// PARTICLES / EXPLOSIONS
-// =====================================================================
-function burst(x,y,color,count=8) {
-  for(let i=0;i<count;i++){
-    const a=Math.random()*Math.PI*2,s=1+Math.random()*3;
-    state.particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:30+Math.random()*20,maxLife:50,color,size:2+Math.random()*3});
-  }
+// ===== PARTICLES =====
+function burst(x,y,color,count=8){
+  for(let i=0;i<count;i++){const a=Math.random()*Math.PI*2,s=1+Math.random()*3;
+    state.particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:30+Math.random()*20,maxLife:50,color,size:2+Math.random()*3});}
 }
 
-// =====================================================================
-// DAMAGE
-// =====================================================================
-function takeDamage(bloon,dmg) {
-  if(!bloon||bloon.dead) return;
-  bloon.hp-=dmg;
-  if(bloon.hp<=0) killBloon(bloon);
+// ===== DAMAGE =====
+function takeDamage(b,dmg){
+  if(!b||b.dead)return;
+  b.hp-=dmg;if(b.hp<=0)killBloon(b);
 }
-
-function killBloon(bloon) {
-  const bt=BLOON_TYPES[bloon.type];
-  state.money+=bt.reward; state.popped++;
-  burst(bloon.x,bloon.y,bt.color,bloon.type==='moab'?20:8);
-  bloon.dead=true;
-  if(bloon.type==='moab'){
-    for(let i=0;i<4;i++){
-      const b=spawnBloon('ceramic'); b.dist=bloon.dist;
-      const p=posOnPath(b.dist); b.x=p.x; b.y=p.y;
-      state.bloons.push(b);
-    }
+function killBloon(b){
+  const bt=BLOON_TYPES[b.type];
+  state.money+=bt.reward;state.popped++;
+  burst(b.x,b.y,bt.color,bt.isMoabClass?20:8);
+  b.dead=true;
+  // Spawn children
+  const children={moab:['ceramic','ceramic','ceramic','ceramic'],
+    bfb:['moab','moab','moab','moab'],
+    zomg:['bfb','bfb','bfb','bfb'],
+    ddt:['ceramic','ceramic','black','black'],
+    bad:['zomg','zomg','ddt','ddt','ddt']};
+  if(children[b.type]){
+    children[b.type].forEach(child=>{
+      const c=spawnBloon(child);c.dist=b.dist;
+      const p=posOnPath(c.dist);c.x=p.x;c.y=p.y;
+      state.bloons.push(c);
+    });
   }
   updateUI();
 }
 
-// =====================================================================
-// TOWER AI
-// =====================================================================
-function findTarget(tower) {
+// ===== TOWER AI =====
+function findTarget(tower){
+  if(tower.isFarm||tower.isVillage||tower.isSpikeFactory)return null;
   let best=null,bestDist=-1;
   for(const b of state.bloons){
-    if(b.dead) continue;
-    if(b.frozenTimer>0&&!tower.isExplosive&&!tower.isMortar) continue;
-    const dx=b.x-tower.x,dy=b.y-tower.y;
-    const d=Math.sqrt(dx*dx+dy*dy);
+    if(b.dead)continue;
+    if(b.frozenTimer>0&&!tower.isExplosive&&!tower.isMortar)continue;
+    if(b.type==='ddt'&&b.isCamo&&!tower.camoDet)continue;
+    const dx=b.x-tower.x,dy=b.y-tower.y,d=Math.sqrt(dx*dx+dy*dy);
     if(d<=tower.range&&b.dist>bestDist){bestDist=b.dist;best=b;}
   }
   return best;
 }
 
-function shootTower(tower) {
+function shootTower(tower){
+  if(tower.isFarm||tower.isVillage)return;
   if(tower.cooldown>0){tower.cooldown--;return;}
 
+  // SPIKE FACTORY
+  if(tower.isSpikeFactory){
+    // Place spike pile at a point on path near tower
+    const PATH=getPath();let bestPt=null,bestDist=Infinity;
+    for(let d=0;d<5000;d+=30){
+      const p=posOnPath(d);if(p.done)break;
+      const dist=Math.sqrt((p.x-tower.x)**2+(p.y-tower.y)**2);
+      if(dist<tower.range&&dist<bestDist){bestDist=dist;bestPt={...p,pathDist:d};}
+    }
+    if(bestPt){
+      state.spikes.push({x:bestPt.x,y:bestPt.y,damage:tower.damage,pierce:tower.pierce,
+        life:tower.spikeLife||600,explosive:tower.spikeExplosive||0,blastRadius:tower.blastRadius||0,
+        moabMauler:tower.moabMauler||0});
+      tower.cooldown=tower.fireRate;
+    }
+    return;
+  }
+
+  // ICE
   if(tower.isFreeze){
     let any=false;
     for(const b of state.bloons){
-      if(b.dead) continue;
-      const dx=b.x-tower.x,dy=b.y-tower.y;
-      if(Math.sqrt(dx*dx+dy*dy)<=tower.range){
+      if(b.dead)continue;
+      const d=Math.sqrt((b.x-tower.x)**2+(b.y-tower.y)**2);
+      if(d<=tower.range){
         any=true;
-        if(b.type!=='moab') b.frozenTimer=Math.round(tower.freezeDuration);
-        if(tower.damage>0) takeDamage(b,tower.damage);
+        if(!BLOON_TYPES[b.type].isMoabClass)b.frozenTimer=Math.round(tower.freezeDuration);
+        if(tower.damage>0)takeDamage(b,tower.damage);
       }
     }
     if(any){tower.cooldown=tower.fireRate;burst(tower.x,tower.y,'#00bfff',4);}
@@ -741,63 +509,75 @@ function shootTower(tower) {
   }
 
   const target=findTarget(tower);
-  if(!target) return;
+  if(!target)return;
   tower.cooldown=tower.fireRate;
-  if(tower.moneyPerShot) state.money+=tower.moneyPerShot;
+  if(tower.moneyPerShot)state.money+=tower.moneyPerShot;
 
-  const dx=target.x-tower.x,dy=target.y-tower.y;
-  const len=Math.sqrt(dx*dx+dy*dy)||1;
-  tower.angle=Math.atan2(dy,dx);
+  const dx=target.x-tower.x,dy=target.y-tower.y,len=Math.sqrt(dx*dx+dy*dy)||1;
+  if(!tower.isAce)tower.angle=Math.atan2(dy,dx);
 
   const shoot=(ddx,ddy)=>state.projectiles.push(createProjectile(tower,ddx,ddy,target.id));
 
   if(tower.spreadShot){
     const n=tower.spreadShot;
     for(let i=0;i<n;i++){const a=(i/n)*Math.PI*2;shoot(Math.cos(a),Math.sin(a));}
-  } else if(tower.spreadTriple){
-    for(let i=-1;i<=1;i++){const a=Math.atan2(dy,dx)+i*0.2;shoot(Math.cos(a),Math.sin(a));}
+  } else if(tower.spreadTriple||tower.isHeli){
+    for(let i=-1;i<=1;i++){const a=Math.atan2(dy,dx)+i*.22;shoot(Math.cos(a),Math.sin(a));}
+  } else if(tower.quadShot){
+    for(let i=-1;i<=2;i++){const a=Math.atan2(dy,dx)+i*.22;shoot(Math.cos(a),Math.sin(a));}
   } else if(tower.dualShot){
     shoot(dx/len,dy/len);
-    const a=Math.atan2(dy,dx)+0.25;
-    shoot(Math.cos(a),Math.sin(a));
+    const a=Math.atan2(dy,dx)+.25;shoot(Math.cos(a),Math.sin(a));
   } else {
     shoot(dx/len,dy/len);
   }
 }
 
-// =====================================================================
-// PROJECTILE LOGIC
-// =====================================================================
-function explodeAt(proj,x,y) {
+// ===== CHAIN LIGHTNING =====
+function chainLightning(startBloon,dmg,jumps,hit){
+  if(jumps<=0||!startBloon||startBloon.dead)return;
+  hit=hit||new Set([startBloon.id]);
+  takeDamage(startBloon,dmg);
+  burst(startBloon.x,startBloon.y,'#00ffff',4);
+  // find nearest not yet hit
+  let next=null,nd=99999;
   for(const b of state.bloons){
-    if(b.dead||proj.hit.has(b.id)) continue;
-    const dx=b.x-x,dy=b.y-y;
-    if(Math.sqrt(dx*dx+dy*dy)<=proj.blastRadius){
+    if(b.dead||hit.has(b.id))continue;
+    const d=Math.sqrt((b.x-startBloon.x)**2+(b.y-startBloon.y)**2);
+    if(d<120&&d<nd){nd=d;next=b;}
+  }
+  if(next){hit.add(next.id);chainLightning(next,dmg,jumps-1,hit);}
+}
+
+// ===== EXPLODE =====
+function explodeAt(proj,x,y){
+  for(const b of state.bloons){
+    if(b.dead||proj.hit.has(b.id))continue;
+    const d=Math.sqrt((b.x-x)**2+(b.y-y)**2);
+    if(d<=proj.blastRadius){
       let dmg=proj.damage;
-      if(proj.moabMauler&&b.type==='moab') dmg*=(proj.moabMulti||10);
-      if(proj.moabElim&&b.type==='moab') dmg*=20;
-      takeDamage(b,dmg);
-      proj.hit.add(b.id);
-      if(proj.ninjaFreeze&&b.type!=='moab') b.frozenTimer=proj.ninjaFreezeTime;
-      if(proj.morterFreeze&&b.type!=='moab') b.frozenTimer=proj.morterFreezeTime;
+      if(proj.moabMauler&&BLOON_TYPES[b.type].isMoabClass)dmg*=(proj.moabMulti||10);
+      if(proj.moabElim&&BLOON_TYPES[b.type].isMoabClass)dmg*=20;
+      takeDamage(b,dmg);proj.hit.add(b.id);
+      if(proj.mortarFT&&!BLOON_TYPES[b.type].isMoabClass)b.frozenTimer=proj.mortarFT;
     }
   }
   state.explosions.push({x,y,r:4,maxR:proj.blastRadius,life:18,maxLife:18});
-  burst(x,y,'#ff6600',12); burst(x,y,'#ffcc00',8);
+  burst(x,y,'#ff6600',12);burst(x,y,'#ffcc00',8);
 }
 
-function updateProjectile(proj) {
-  if(proj.dead) return;
-  proj.x+=proj.dx*proj.speed; proj.y+=proj.dy*proj.speed;
+// ===== UPDATE PROJECTILE =====
+function updateProjectile(proj){
+  if(proj.dead)return;
+  proj.x+=proj.dx*proj.speed;proj.y+=proj.dy*proj.speed;
   if(proj.x<-60||proj.x>760||proj.y<-60||proj.y>580){proj.dead=true;return;}
 
   if(proj.isExplosive&&!proj.onHitExplode){
     for(const b of state.bloons){
-      if(b.dead) continue;
+      if(b.dead)continue;
       const bt=BLOON_TYPES[b.type];
-      const dx=b.x-proj.x,dy=b.y-proj.y;
-      if(Math.sqrt(dx*dx+dy*dy)<bt.size+proj.size){
-        explodeAt(proj,proj.x,proj.y); proj.dead=true; return;
+      if(Math.sqrt((b.x-proj.x)**2+(b.y-proj.y)**2)<bt.size+proj.size){
+        explodeAt(proj,proj.x,proj.y);proj.dead=true;return;
       }
     }
     const target=state.bloons.find(b=>!b.dead&&b.id===proj.targetId);
@@ -806,26 +586,26 @@ function updateProjectile(proj) {
   }
 
   for(const b of state.bloons){
-    if(b.dead||proj.hit.has(b.id)) continue;
+    if(b.dead||proj.hit.has(b.id))continue;
+    if(BLOON_TYPES[b.type].isCamo&&!proj.towerRef?.camoDet)continue;
     const bt=BLOON_TYPES[b.type];
-    const dx=b.x-proj.x,dy=b.y-proj.y;
-    if(Math.sqrt(dx*dx+dy*dy)<=bt.size+proj.size/2){
+    if(Math.sqrt((b.x-proj.x)**2+(b.y-proj.y)**2)<=bt.size+proj.size/2){
       proj.hit.add(b.id);
       if(proj.isGlue){
-        b.gluedTimer=proj.slowDuration; b.slowFactor=proj.slowFactor;
+        b.gluedTimer=proj.slowDuration;b.slowFactor=proj.slowFactor;
         if(proj.glueDot){b.glueDot=true;b.glueDotDmg=proj.glueDotDmg;}
-        if(proj.damage>0) takeDamage(b,proj.damage);
+        if(proj.damage>0)takeDamage(b,proj.damage);
       } else if(proj.onHitExplode){
         let dmg=proj.damage;
-        if(proj.moabMauler&&b.type==='moab') dmg*=(proj.moabMulti||10);
-        takeDamage(b,dmg);
-        explodeAt(proj,proj.x,proj.y);
+        if(proj.moabMauler&&BLOON_TYPES[b.type].isMoabClass)dmg*=(proj.moabMulti||10);
+        takeDamage(b,dmg);explodeAt(proj,proj.x,proj.y);
       } else {
         let dmg=proj.damage;
-        if(proj.moabMauler&&b.type==='moab') dmg*=(proj.moabMulti||10);
-        if(proj.moabElim&&b.type==='moab') dmg*=20;
+        if(proj.moabMauler&&BLOON_TYPES[b.type].isMoabClass)dmg*=(proj.moabMulti||10);
+        if(proj.moabElim&&BLOON_TYPES[b.type].isMoabClass)dmg*=20;
         takeDamage(b,dmg);
-        if(proj.ninjaFreeze&&b.type!=='moab') b.frozenTimer=proj.ninjaFreezeTime;
+        if(proj.ninjaFT&&!BLOON_TYPES[b.type].isMoabClass)b.frozenTimer=proj.ninjaFT;
+        if(proj.lightning&&proj.lightningJumps>0)chainLightning(b,proj.damage,proj.lightningJumps);
       }
       proj.pierce--;
       if(proj.pierce<=0){proj.dead=true;return;}
@@ -833,52 +613,75 @@ function updateProjectile(proj) {
   }
 }
 
-// =====================================================================
-// UPDATE
-// =====================================================================
-function update() {
-  if(state.gameOver||state.victory) return;
+// ===== UPDATE =====
+function update(){
+  if(state.gameOver||state.victory)return;
   state.frame++;
 
+  // spawn
   if(state.waveActive&&state.spawnQueue.length>0){
     state.spawnTimer++;
     while(state.spawnQueue.length>0&&state.spawnQueue[0].delay<=state.spawnTimer)
       state.bloons.push(spawnBloon(state.spawnQueue.shift().type));
   }
 
+  // move bloons
   for(const b of state.bloons){
-    if(b.dead) continue;
+    if(b.dead)continue;
     if(b.frozenTimer>0){b.frozenTimer--;continue;}
-    if(b.gluedTimer>0) b.gluedTimer--;
-    else b.slowFactor=1;
-    if(b.glueDot&&b.gluedTimer>0&&state.frame%60===0) takeDamage(b,b.glueDotDmg||1);
-    const spd=b.speed*(b.gluedTimer>0?b.slowFactor:1);
-    b.dist+=spd;
-    const p=posOnPath(b.dist); b.x=p.x; b.y=p.y;
-    if(p.done){
-      state.lives-=BLOON_TYPES[b.type].hp;
-      burst(b.x,b.y,'#ff0000',5); b.dead=true;
-      if(state.lives<=0){state.lives=0;endGame(false);return;}
-      updateUI();
-    }
+    if(b.gluedTimer>0)b.gluedTimer--;else b.slowFactor=1;
+    if(b.glueDot&&b.gluedTimer>0&&state.frame%60===0)takeDamage(b,b.glueDotDmg||1);
+    b.dist+=b.speed*(b.gluedTimer>0?b.slowFactor:1);
+    const p=posOnPath(b.dist);b.x=p.x;b.y=p.y;
+    if(p.done){state.lives-=BLOON_TYPES[b.type].hp;burst(b.x,b.y,'#ff0000',5);b.dead=true;
+      if(state.lives<=0){state.lives=0;endGame(false);return;}updateUI();}
   }
   state.bloons=state.bloons.filter(b=>!b.dead);
 
-  for(const t of state.towers) shootTower(t);
+  // towers
+  for(const t of state.towers)shootTower(t);
 
-  for(const p of state.projectiles) updateProjectile(p);
+  // spikes
+  for(const sp of state.spikes){
+    sp.life--;
+    for(const b of state.bloons){
+      if(b.dead)continue;
+      if(Math.sqrt((b.x-sp.x)**2+(b.y-sp.y)**2)<BLOON_TYPES[b.type].size+6){
+        let dmg=sp.damage;
+        if(sp.moabMauler&&BLOON_TYPES[b.type].isMoabClass)dmg*=5;
+        takeDamage(b,dmg);sp.pierce--;
+        if(sp.explosive&&sp.pierce<=0){
+          // mini explosion
+          const fakeProj={damage:sp.damage,blastRadius:sp.blastRadius,hit:new Set(),moabMauler:sp.moabMauler,moabMulti:1,moabElim:0,mortarFT:0};
+          explodeAt(fakeProj,sp.x,sp.y);
+        }
+        if(sp.pierce<=0){sp.life=0;}
+      }
+    }
+  }
+  state.spikes=state.spikes.filter(s=>s.life>0);
+
+  // projectiles
+  for(const p of state.projectiles)updateProjectile(p);
   state.projectiles=state.projectiles.filter(p=>!p.dead);
 
-  for(const p of state.particles){p.x+=p.vx;p.y+=p.vy;p.vx*=0.9;p.vy*=0.9;p.life--;}
+  // particles
+  for(const p of state.particles){p.x+=p.vx;p.y+=p.vy;p.vx*=.9;p.vy*=.9;p.life--;}
   state.particles=state.particles.filter(p=>p.life>0);
 
+  // explosions
   for(const e of state.explosions){e.r=e.maxR*(1-e.life/e.maxLife);e.life--;}
   state.explosions=state.explosions.filter(e=>e.life>0);
 
+  // wave done
   if(state.waveActive&&state.spawnQueue.length===0&&state.bloons.length===0){
     state.waveActive=false;
     if(state.round>=state.maxRound){endGame(true);return;}
-    for(const t of state.towers) if(t.supplyDrop) state.money+=t.supplyAmt||200;
+    for(const t of state.towers){
+      if(t.supplyDrop)state.money+=t.supplyAmt||0;
+      if(t.farmPerRound)state.money+=t.farmPerRound;
+      if(t.monkeyBank)state.money=Math.round(state.money*1.15);
+    }
     state.round++;
     state.money+=100+state.round*10;
     updateUI();
@@ -886,363 +689,278 @@ function update() {
   }
 }
 
-// =====================================================================
-// DRAW HELPERS
-// =====================================================================
-function drawPathOnCtx(context, path, grassColor, w, h, scaleX, scaleY, offsetX, offsetY) {
-  context.fillStyle=grassColor;
-  context.fillRect(0,0,w,h);
-  // outer
-  context.strokeStyle='#b8944e'; context.lineWidth=Math.max(3,14*Math.min(scaleX,scaleY));
-  context.lineCap='round'; context.lineJoin='round';
-  context.beginPath(); context.moveTo(path[0].x*scaleX+offsetX, path[0].y*scaleY+offsetY);
-  for(let i=1;i<path.length;i++) context.lineTo(path[i].x*scaleX+offsetX, path[i].y*scaleY+offsetY);
-  context.stroke();
-  // inner
-  context.strokeStyle='#c8a46e'; context.lineWidth=Math.max(2,10*Math.min(scaleX,scaleY));
-  context.beginPath(); context.moveTo(path[0].x*scaleX+offsetX, path[0].y*scaleY+offsetY);
-  for(let i=1;i<path.length;i++) context.lineTo(path[i].x*scaleX+offsetX, path[i].y*scaleY+offsetY);
-  context.stroke();
+// ===== DRAW =====
+function drawPathOnCtx(c,path,grassColor,w,h,sx,sy,ox,oy){
+  c.fillStyle=grassColor;c.fillRect(0,0,w,h);
+  c.strokeStyle='#b8944e';c.lineWidth=Math.max(3,14*Math.min(sx,sy));c.lineCap='round';c.lineJoin='round';
+  c.beginPath();c.moveTo(path[0].x*sx+ox,path[0].y*sy+oy);
+  for(let i=1;i<path.length;i++)c.lineTo(path[i].x*sx+ox,path[i].y*sy+oy);c.stroke();
+  c.strokeStyle='#c8a46e';c.lineWidth=Math.max(2,10*Math.min(sx,sy));
+  c.beginPath();c.moveTo(path[0].x*sx+ox,path[0].y*sy+oy);
+  for(let i=1;i<path.length;i++)c.lineTo(path[i].x*sx+ox,path[i].y*sy+oy);c.stroke();
 }
 
-function drawScene() {
-  const PATH=getPath();
-  drawPathOnCtx(ctx, PATH, currentMap.grassColor, 700, 520, 1, 1, 0, 0);
+function draw(){
+  if(!currentMap)return;
+  ctx.clearRect(0,0,700,520);
+  const P=getPath();
+  drawPathOnCtx(ctx,P,currentMap.grassColor,700,520,1,1,0,0);
   // dashed guide
-  ctx.strokeStyle='rgba(255,255,255,0.18)'; ctx.lineWidth=2;
-  ctx.setLineDash([12,8]);
-  ctx.beginPath(); ctx.moveTo(PATH[0].x,PATH[0].y);
-  for(let i=1;i<PATH.length;i++) ctx.lineTo(PATH[i].x,PATH[i].y);
-  ctx.stroke(); ctx.setLineDash([]);
+  ctx.strokeStyle='rgba(255,255,255,.18)';ctx.lineWidth=2;ctx.setLineDash([12,8]);
+  ctx.beginPath();ctx.moveTo(P[0].x,P[0].y);
+  for(let i=1;i<P.length;i++)ctx.lineTo(P[i].x,P[i].y);ctx.stroke();ctx.setLineDash([]);
   // markers
-  ctx.fillStyle='#27ae60'; ctx.beginPath(); ctx.arc(PATH[0].x,PATH[0].y,12,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle='#fff'; ctx.font='bold 8px Arial'; ctx.textAlign='center'; ctx.textBaseline='middle';
-  ctx.fillText('IN',PATH[0].x,PATH[0].y);
-  ctx.fillStyle='#e74c3c'; ctx.beginPath(); ctx.arc(PATH[PATH.length-1].x,PATH[PATH.length-1].y,12,0,Math.PI*2); ctx.fill();
-  ctx.fillStyle='#fff'; ctx.fillText('OUT',PATH[PATH.length-1].x,PATH[PATH.length-1].y);
-}
+  ctx.fillStyle='#27ae60';ctx.beginPath();ctx.arc(P[0].x,P[0].y,12,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#fff';ctx.font='bold 8px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('IN',P[0].x,P[0].y);
+  ctx.fillStyle='#e74c3c';ctx.beginPath();ctx.arc(P[P.length-1].x,P[P.length-1].y,12,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#fff';ctx.fillText('OUT',P[P.length-1].x,P[P.length-1].y);
 
-function drawTowerPreview() {
-  if(!state.selectedTowerType||!state.hoveredPos) return;
-  const{x,y}=state.hoveredPos;
-  const tt=state.selectedTowerType;
-  const occupied=state.towers.some(t=>Math.sqrt((t.x-x)**2+(t.y-y)**2)<25);
-  const valid=!isOnPath(x,y)&&!occupied;
-  ctx.beginPath(); ctx.arc(x,y,tt.range,0,Math.PI*2);
-  ctx.fillStyle=valid?'rgba(255,255,255,0.06)':'rgba(255,0,0,0.06)'; ctx.fill();
-  ctx.strokeStyle=valid?'rgba(255,255,255,0.3)':'rgba(255,0,0,0.3)'; ctx.lineWidth=1; ctx.stroke();
-  ctx.globalAlpha=valid?0.7:0.3;
-  ctx.fillStyle=tt.color; ctx.beginPath(); ctx.arc(x,y,16,0,Math.PI*2); ctx.fill();
-  ctx.globalAlpha=1;
-}
-
-function drawTowers() {
-  for(const t of state.towers){
-    if(state.selectedTower===t){
-      ctx.beginPath(); ctx.arc(t.x,t.y,t.range,0,Math.PI*2);
-      ctx.fillStyle='rgba(255,255,255,0.06)'; ctx.fill();
-      ctx.strokeStyle='rgba(255,255,255,0.4)'; ctx.lineWidth=1.5; ctx.stroke();
+  // tower range preview
+  if(state.selectedTowerType&&state.hoveredPos){
+    const{x,y}=state.hoveredPos,tt=state.selectedTowerType;
+    const occ=state.towers.some(t=>Math.sqrt((t.x-x)**2+(t.y-y)**2)<25);
+    const valid=!isOnPath(x,y)&&!occ;
+    if(tt.range>0&&tt.range<900){
+      ctx.beginPath();ctx.arc(x,y,tt.range,0,Math.PI*2);
+      ctx.fillStyle=valid?'rgba(255,255,255,.06)':'rgba(255,0,0,.06)';ctx.fill();
+      ctx.strokeStyle=valid?'rgba(255,255,255,.3)':'rgba(255,0,0,.3)';ctx.lineWidth=1;ctx.stroke();
     }
-    ctx.save(); ctx.translate(t.x,t.y); ctx.rotate(t.angle);
-    ctx.fillStyle=t.color; ctx.beginPath(); ctx.arc(0,0,17,0,Math.PI*2); ctx.fill();
-    ctx.strokeStyle=state.selectedTower===t?'#f0e040':'rgba(255,255,255,0.35)';
-    ctx.lineWidth=state.selectedTower===t?3:1.5; ctx.stroke();
-    if(t.isFreeze){ctx.fillStyle='#00bfff';ctx.beginPath();ctx.arc(0,0,11,0,Math.PI*2);ctx.fill();}
-    else if(t.isGlue){ctx.fillStyle='#c8c800';ctx.beginPath();ctx.arc(0,0,10,0,Math.PI*2);ctx.fill();}
-    else{ctx.fillStyle='rgba(0,0,0,0.35)';ctx.fillRect(5,-4,18,8);}
-    ctx.restore();
-    ctx.font='12px Arial'; ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillText(t.icon,t.x,t.y);
-    // upgrade dots
-    const colors=['#f0e040','#e74c3c','#9b59b6'];
-    for(let p=0;p<3;p++) for(let l=0;l<t.upgrades[p];l++){
-      ctx.fillStyle=colors[p];
-      ctx.beginPath(); ctx.arc(t.x-9+p*9,t.y+21,2.5,0,Math.PI*2); ctx.fill();
+    ctx.globalAlpha=valid?.7:.3;
+    ctx.fillStyle=tt.color;ctx.beginPath();ctx.arc(x,y,16,0,Math.PI*2);ctx.fill();
+    ctx.globalAlpha=1;
+  }
+
+  // village auras
+  for(const t of state.towers){
+    if(t.isVillage){
+      ctx.beginPath();ctx.arc(t.x,t.y,t.range,0,Math.PI*2);
+      ctx.fillStyle='rgba(255,220,80,.06)';ctx.fill();
+      ctx.strokeStyle='rgba(255,220,80,.3)';ctx.lineWidth=1;ctx.stroke();
     }
   }
-}
 
-function drawBloons() {
+  // explosions
+  for(const e of state.explosions){
+    const tt=e.life/e.maxLife;
+    ctx.globalAlpha=tt*.6;ctx.strokeStyle='#ff8800';ctx.lineWidth=3;
+    ctx.beginPath();ctx.arc(e.x,e.y,e.r,0,Math.PI*2);ctx.stroke();
+    const g=ctx.createRadialGradient(e.x,e.y,0,e.x,e.y,e.r);
+    g.addColorStop(0,`rgba(255,220,50,${tt*.55})`);g.addColorStop(.4,`rgba(255,100,0,${tt*.4})`);g.addColorStop(1,'rgba(255,40,0,0)');
+    ctx.fillStyle=g;ctx.beginPath();ctx.arc(e.x,e.y,e.r,0,Math.PI*2);ctx.fill();
+  }
+  ctx.globalAlpha=1;ctx.lineWidth=1;
+
+  // spikes
+  for(const s of state.spikes){
+    ctx.fillStyle='#8b0000';ctx.font='12px Arial';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText('⚡',s.x,s.y);
+  }
+
+  // towers
+  for(const t of state.towers){
+    if(state.selectedTower===t&&t.range>0&&t.range<900){
+      ctx.beginPath();ctx.arc(t.x,t.y,t.range,0,Math.PI*2);
+      ctx.fillStyle='rgba(255,255,255,.06)';ctx.fill();
+      ctx.strokeStyle='rgba(255,255,255,.4)';ctx.lineWidth=1.5;ctx.stroke();
+    }
+    ctx.save();ctx.translate(t.x,t.y);
+    if(!t.isFarm&&!t.isVillage&&!t.isSpikeFactory)ctx.rotate(t.angle);
+    ctx.fillStyle=t.color;ctx.beginPath();ctx.arc(0,0,17,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle=state.selectedTower===t?'#f0e040':'rgba(255,255,255,.35)';
+    ctx.lineWidth=state.selectedTower===t?3:1.5;ctx.stroke();
+    if(t.isFreeze){ctx.fillStyle='#00bfff';ctx.beginPath();ctx.arc(0,0,11,0,Math.PI*2);ctx.fill();}
+    else if(t.isGlue){ctx.fillStyle='#c8c800';ctx.beginPath();ctx.arc(0,0,10,0,Math.PI*2);ctx.fill();}
+    else if(!t.isFarm&&!t.isVillage&&!t.isSpikeFactory){ctx.fillStyle='rgba(0,0,0,.35)';ctx.fillRect(5,-4,16,8);}
+    ctx.restore();
+    ctx.font='11px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(t.icon,t.x,t.y);
+    const pc=['#f0e040','#e74c3c','#9b59b6'];
+    for(let p=0;p<3;p++)for(let l=0;l<t.upgrades[p];l++){
+      ctx.fillStyle=pc[p];ctx.beginPath();ctx.arc(t.x-8+p*8,t.y+21,2.2,0,Math.PI*2);ctx.fill();
+    }
+  }
+
+  // bloons
   for(const b of state.bloons){
-    if(b.dead) continue;
+    if(b.dead)continue;
     const bt=BLOON_TYPES[b.type];
-    ctx.save(); ctx.translate(b.x,b.y);
-    ctx.fillStyle='rgba(0,0,0,0.2)'; ctx.beginPath(); ctx.ellipse(2,4,bt.size*0.8,bt.size*0.4,0,0,Math.PI*2); ctx.fill();
+    ctx.save();ctx.translate(b.x,b.y);
+    ctx.fillStyle='rgba(0,0,0,.2)';ctx.beginPath();ctx.ellipse(2,4,bt.size*.8,bt.size*.4,0,0,Math.PI*2);ctx.fill();
     if(b.frozenTimer>0){ctx.fillStyle='#b0e8ff';ctx.beginPath();ctx.arc(0,0,bt.size+2,0,Math.PI*2);ctx.fill();}
-    ctx.fillStyle=bt.color; ctx.beginPath(); ctx.arc(0,0,bt.size,0,Math.PI*2); ctx.fill();
-    if(b.gluedTimer>0){ctx.fillStyle='rgba(200,200,0,0.4)';ctx.beginPath();ctx.arc(0,0,bt.size,0,Math.PI*2);ctx.fill();}
-    ctx.strokeStyle=bt.border||'rgba(255,255,255,0.5)'; ctx.lineWidth=bt.borderW||1; ctx.stroke();
-    ctx.fillStyle='rgba(255,255,255,0.32)'; ctx.beginPath(); ctx.arc(-bt.size*0.3,-bt.size*0.35,bt.size*0.32,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle=bt.color;ctx.beginPath();ctx.arc(0,0,bt.size,0,Math.PI*2);ctx.fill();
+    if(b.gluedTimer>0){ctx.fillStyle='rgba(200,200,0,.4)';ctx.beginPath();ctx.arc(0,0,bt.size,0,Math.PI*2);ctx.fill();}
+    ctx.strokeStyle=bt.border||'rgba(255,255,255,.5)';ctx.lineWidth=bt.borderW||1;ctx.stroke();
+    ctx.fillStyle='rgba(255,255,255,.3)';ctx.beginPath();ctx.arc(-bt.size*.3,-bt.size*.35,bt.size*.3,0,Math.PI*2);ctx.fill();
     if(bt.hp>5){
-      ctx.fillStyle='rgba(0,0,0,0.5)'; ctx.fillRect(-bt.size,-bt.size-6,bt.size*2,4);
-      ctx.fillStyle=b.hp/bt.hp>0.5?'#27ae60':'#e74c3c';
+      ctx.fillStyle='rgba(0,0,0,.5)';ctx.fillRect(-bt.size,-bt.size-6,bt.size*2,4);
+      ctx.fillStyle=b.hp/bt.hp>.5?'#27ae60':'#e74c3c';
       ctx.fillRect(-bt.size,-bt.size-6,bt.size*2*(b.hp/bt.hp),4);
     }
     ctx.restore();
   }
-}
 
-function drawProjectiles() {
+  // projectiles
   for(const p of state.projectiles){
     ctx.fillStyle=p.color||'#fff';
-    ctx.beginPath(); ctx.arc(p.x,p.y,Math.max(1.5,p.size/2),0,Math.PI*2); ctx.fill();
+    ctx.beginPath();ctx.arc(p.x,p.y,Math.max(1.5,p.size/2),0,Math.PI*2);ctx.fill();
   }
-}
 
-function drawExplosions() {
-  for(const e of state.explosions){
-    const t=e.life/e.maxLife;
-    ctx.globalAlpha=t*0.6; ctx.strokeStyle='#ff8800'; ctx.lineWidth=3;
-    ctx.beginPath(); ctx.arc(e.x,e.y,e.r,0,Math.PI*2); ctx.stroke();
-    const g=ctx.createRadialGradient(e.x,e.y,0,e.x,e.y,e.r);
-    g.addColorStop(0,`rgba(255,220,50,${t*0.55})`);
-    g.addColorStop(0.4,`rgba(255,100,0,${t*0.4})`);
-    g.addColorStop(1,'rgba(255,40,0,0)');
-    ctx.fillStyle=g; ctx.beginPath(); ctx.arc(e.x,e.y,e.r,0,Math.PI*2); ctx.fill();
-  }
-  ctx.globalAlpha=1; ctx.lineWidth=1;
-}
-
-function drawParticles() {
+  // particles
   for(const p of state.particles){
-    ctx.globalAlpha=p.life/p.maxLife;
-    ctx.fillStyle=p.color; ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,Math.PI*2); ctx.fill();
+    ctx.globalAlpha=p.life/p.maxLife;ctx.fillStyle=p.color;
+    ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill();
   }
   ctx.globalAlpha=1;
+
+  // HUD
+  ctx.fillStyle='rgba(0,0,0,.45)';ctx.beginPath();ctx.roundRect(10,10,220,32,6);ctx.fill();
+  ctx.textBaseline='middle';const cy=26;
+  ctx.font='15px Arial';ctx.textAlign='left';ctx.fillStyle='#fff';ctx.fillText('❤️',18,cy);
+  ctx.font='bold 14px Arial';ctx.fillStyle='#ff6b6b';ctx.fillText(Math.max(0,state.lives),40,cy);
+  ctx.fillStyle='rgba(255,255,255,.25)';ctx.fillRect(98,16,1,20);
+  ctx.font='15px Arial';ctx.fillStyle='#fff';ctx.fillText('🪙',106,cy);
+  ctx.font='bold 14px Arial';ctx.fillStyle='#f0e040';ctx.fillText('$'+state.money,128,cy);
 }
 
-function drawHUD() {
-  const pad=10,h=32;
-  ctx.fillStyle='rgba(0,0,0,0.45)';
-  ctx.beginPath(); ctx.roundRect(pad,pad,220,h,6); ctx.fill();
-  ctx.textBaseline='middle'; const cy=pad+h/2;
-  ctx.font='16px Arial'; ctx.textAlign='left'; ctx.fillText('❤️',pad+8,cy);
-  ctx.font='bold 15px Arial'; ctx.fillStyle='#ff6b6b'; ctx.fillText(Math.max(0,state.lives),pad+30,cy);
-  ctx.fillStyle='rgba(255,255,255,0.25)'; ctx.fillRect(pad+88,pad+6,1,h-12);
-  ctx.font='16px Arial'; ctx.fillStyle='#fff'; ctx.fillText('🪙',pad+98,cy);
-  ctx.font='bold 15px Arial'; ctx.fillStyle='#f0e040'; ctx.fillText('$'+state.money,pad+120,cy);
-}
-
-function draw() {
-  if(!currentMap) return;
-  ctx.clearRect(0,0,700,520);
-  drawScene();
-  drawTowerPreview();
-  drawExplosions();
-  drawTowers();
-  drawBloons();
-  drawProjectiles();
-  drawParticles();
-  drawHUD();
-}
-
-// =====================================================================
-// UI
-// =====================================================================
-function getTowerTotalSpent(tower) {
-  let v=TOWER_DEFS.find(d=>d.id===tower.typeId).cost;
-  const def=TOWER_DEFS.find(d=>d.id===tower.typeId);
-  for(let p=0;p<3;p++) for(let tier=0;tier<tower.upgrades[p];tier++) v+=def.upgrades[p][tier].cost;
+// ===== UI =====
+function getTowerSpent(t){
+  let v=TOWER_DEFS.find(d=>d.id===t.typeId).cost;
+  const def=TOWER_DEFS.find(d=>d.id===t.typeId);
+  for(let p=0;p<3;p++)for(let i=0;i<t.upgrades[p];i++)v+=def.upgrades[p][i].cost;
   return v;
 }
-
-function updateUI() {
-  document.getElementById('stat-lives')&&(document.getElementById('stat-lives').textContent=Math.max(0,state.lives));
-  document.getElementById('stat-money')&&(document.getElementById('stat-money').textContent='$'+state.money);
+function updateUI(){
   document.getElementById('stat-round').textContent=state.round+'/'+state.maxRound;
   document.getElementById('stat-popped').textContent=state.popped;
-
   document.querySelectorAll('.tower-btn').forEach(btn=>{
     btn.classList.toggle('too-expensive',state.money<parseInt(btn.dataset.cost));
     btn.classList.toggle('selected',state.selectedTowerType&&state.selectedTowerType.id===btn.dataset.id);
   });
-
   const panel=document.getElementById('upgrade-panel');
   if(!state.selectedTower){panel.style.display='none';return;}
   panel.style.display='block';
-  const t=state.selectedTower;
-  const def=TOWER_DEFS.find(d=>d.id===t.typeId);
+  const t=state.selectedTower,def=TOWER_DEFS.find(d=>d.id===t.typeId);
   document.getElementById('upgrade-title').textContent=`${t.name} [${t.upgrades.join('-')}]`;
-  const pathsDiv=document.getElementById('upgrade-paths');
-  pathsDiv.innerHTML='';
-  const pathColors=['#f0e040','#e74c3c','#9b59b6'];
+  const pd=document.getElementById('upgrade-paths');pd.innerHTML='';
+  const pc=['#f0e040','#e74c3c','#9b59b6'];
   for(let path=0;path<3;path++){
-    const curLevel=t.upgrades[path];
-    const div=document.createElement('div'); div.className='upgrade-path';
-    const header=document.createElement('div'); header.className='path-header';
-    const nameSpan=document.createElement('span'); nameSpan.className='path-name';
-    nameSpan.style.color=pathColors[path]; nameSpan.textContent='Pfad '+(path+1);
-    header.appendChild(nameSpan);
-    const pips=document.createElement('div'); pips.className='path-pips';
-    for(let i=0;i<5;i++){const pip=document.createElement('div');pip.className='pip'+(i<curLevel?' filled'+(i>=4?' t5':i>=3?' t4':i>=2?' t3':''):'');pips.appendChild(pip);}
-    header.appendChild(pips); div.appendChild(header);
+    const lv=t.upgrades[path],div=document.createElement('div');div.className='upgrade-path';
+    const hdr=document.createElement('div');hdr.className='path-header';
+    const ns=document.createElement('span');ns.className='path-name';ns.style.color=pc[path];ns.textContent='Pfad '+(path+1);hdr.appendChild(ns);
+    const pips=document.createElement('div');pips.className='path-pips';
+    for(let i=0;i<5;i++){const pip=document.createElement('div');pip.className='pip'+(i<lv?' filled'+(i>=4?' t5':i>=3?' t4':i>=2?' t3':''):'');pips.appendChild(pip);}
+    hdr.appendChild(pips);div.appendChild(hdr);
     for(let tier=0;tier<5;tier++){
-      const u=def.upgrades[path][tier];
-      const done=curLevel>tier, isNext=curLevel===tier;
-      const canDo=canUpgradePath(t,path), canAfford=state.money>=u.cost;
+      const u=def.upgrades[path][tier],done=lv>tier,isNext=lv===tier;
+      const canDo=canUpgradePath(t,path),canAff=state.money>=u.cost;
       const tc=tier>=4?'t5':tier>=3?'t4':tier>=2?'t3':'';
       const btn=document.createElement('button');
       btn.className='upgrade-tier-btn'+(done?' done':tc?' '+tc:'');
-      btn.disabled=done||!isNext||!canDo||!canAfford;
-      btn.innerHTML=`<span>${tier+1}. ${u.name}</span><span class="tier-cost">${done?'✓':(!canDo&&isNext?'🔒':'$'+u.cost)}</span>`;
+      btn.disabled=done||!isNext||!canDo||!canAff;
+      btn.innerHTML=`<span>${tier+1}.${u.name}</span><span class="tier-cost">${done?'✓':(!canDo&&isNext?'🔒':'$'+u.cost)}</span>`;
       btn.title=u.desc;
-      if(isNext&&canDo&&canAfford) btn.onclick=()=>{state.money-=u.cost;applyUpgrade(t,path);updateUI();};
+      if(isNext&&canDo&&canAff)btn.onclick=()=>{state.money-=u.cost;applyUpgrade(t,path);updateUI();};
       div.appendChild(btn);
     }
-    pathsDiv.appendChild(div);
+    pd.appendChild(div);
   }
-  const sellVal=Math.round(getTowerTotalSpent(t)*0.7);
-  document.getElementById('sell-btn').textContent=`Verkaufen ($${sellVal})`;
-  document.getElementById('sell-btn').onclick=()=>{
-    state.money+=sellVal;
-    state.towers=state.towers.filter(tt=>tt!==t);
-    state.selectedTower=null; updateUI();
-  };
+  const sv=Math.round(getTowerSpent(t)*.7);
+  document.getElementById('sell-btn').textContent=`Verkaufen ($${sv})`;
+  document.getElementById('sell-btn').onclick=()=>{state.money+=sv;state.towers=state.towers.filter(x=>x!==t);state.selectedTower=null;updateUI();};
 }
 
-function buildTowerButtons() {
-  const container=document.getElementById('tower-buttons');
-  container.innerHTML='';
+function buildTowerButtons(){
+  const c=document.getElementById('tower-buttons');c.innerHTML='';
   TOWER_DEFS.forEach(def=>{
     const btn=document.createElement('button');
-    btn.className='tower-btn'; btn.dataset.id=def.id; btn.dataset.cost=def.cost;
+    btn.className='tower-btn';btn.dataset.id=def.id;btn.dataset.cost=def.cost;
     btn.innerHTML=`<div class="tower-icon" style="background:${def.color}">${def.icon}</div>
       <div class="tower-info"><div class="tower-name">${def.name}</div><div class="tower-cost">$${def.cost}</div></div>`;
     btn.onclick=()=>{
-      if(state.money<def.cost) return;
+      if(state.money<def.cost)return;
       state.selectedTowerType=(state.selectedTowerType===def)?null:def;
-      state.selectedTower=null; updateUI();
+      state.selectedTower=null;updateUI();
     };
-    container.appendChild(btn);
+    c.appendChild(btn);
   });
 }
 
-// =====================================================================
-// CANVAS EVENTS
-// =====================================================================
-canvas.addEventListener('mousemove',e=>{
-  const r=canvas.getBoundingClientRect();
-  state.hoveredPos={x:e.clientX-r.left,y:e.clientY-r.top};
-});
+// ===== EVENTS =====
+canvas.addEventListener('mousemove',e=>{const r=canvas.getBoundingClientRect();state.hoveredPos={x:e.clientX-r.left,y:e.clientY-r.top};});
 canvas.addEventListener('mouseleave',()=>{state.hoveredPos=null;});
 canvas.addEventListener('click',e=>{
-  const r=canvas.getBoundingClientRect();
-  const x=e.clientX-r.left,y=e.clientY-r.top;
+  const r=canvas.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;
   if(state.selectedTowerType){
     const def=state.selectedTowerType;
-    if(state.money<def.cost) return;
-    if(isOnPath(x,y)) return;
-    if(state.towers.some(t=>Math.sqrt((t.x-x)**2+(t.y-y)**2)<25)) return;
-    state.money-=def.cost;
-    state.towers.push(createTower(def,x,y));
-    state.selectedTowerType=null; updateUI(); return;
+    if(state.money<def.cost)return;
+    if(!def.isFarm&&!def.isVillage&&!def.isSpikeFactory&&isOnPath(x,y))return;
+    if(state.towers.some(t=>Math.sqrt((t.x-x)**2+(t.y-y)**2)<25))return;
+    state.money-=def.cost;state.towers.push(createTower(def,x,y));
+    state.selectedTowerType=null;updateUI();return;
   }
   const found=state.towers.find(t=>Math.sqrt((t.x-x)**2+(t.y-y)**2)<18);
   state.selectedTower=(found&&state.selectedTower===found)?null:(found||null);
   updateUI();
 });
-
 document.getElementById('start-btn').onclick=()=>{
-  if(state.waveActive||state.gameOver||state.victory) return;
-  state.waveActive=true; state.spawnQueue=makeWave(state.round); state.spawnTimer=0;
+  if(state.waveActive||state.gameOver||state.victory)return;
+  state.waveActive=true;state.spawnQueue=makeWave(state.round);state.spawnTimer=0;
   document.getElementById('start-btn').disabled=true;
 };
 document.getElementById('speed-btn').onclick=()=>{
   state.speed=state.speed===1?2:1;
-  document.getElementById('speed-btn').textContent=state.speed===2?'⏩ 1x Geschwindigkeit':'⏩ 2x Geschwindigkeit';
+  document.getElementById('speed-btn').textContent=state.speed===2?'⏩ 1x Speed':'⏩ 2x Speed';
 };
 document.getElementById('back-btn').onclick=()=>goToMenu();
-document.addEventListener('keydown',e=>{if(e.key==='Enter') document.getElementById('start-btn').click();});
+document.addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('start-btn').click();});
 
-// =====================================================================
-// GAME LOOP
-// =====================================================================
-function gameLoop() {
-  for(let i=0;i<state.speed;i++) update();
-  draw();
-  requestAnimationFrame(gameLoop);
-}
+// ===== GAME LOOP =====
+function gameLoop(){for(let i=0;i<state.speed;i++)update();draw();requestAnimationFrame(gameLoop);}
 
-function endGame(win) {
-  state.gameOver=!win; state.victory=win;
-  const msg=document.getElementById('message');
+function endGame(win){
+  state.gameOver=!win;state.victory=win;
   document.getElementById('msg-title').textContent=win?'🎉 GEWONNEN!':'💀 GAME OVER';
-  document.getElementById('msg-sub').textContent=win
-    ?`Alle ${state.maxRound} Runden überlebt! Gepoppt: ${state.popped}`
-    :`Runde ${state.round} – Gepoppt: ${state.popped}`;
-  msg.style.display='block';
+  document.getElementById('msg-sub').textContent=win?`Alle 60 Runden überlebt! Gepoppt: ${state.popped}`:`Runde ${state.round} – Gepoppt: ${state.popped}`;
+  document.getElementById('message').style.display='block';
 }
-
-function restartGame() {
+function restartGame(){
   document.getElementById('message').style.display='none';
-  initState(currentMap);
+  initState(currentMap);buildTowerButtons();updateUI();
   document.getElementById('start-btn').disabled=false;
-  buildTowerButtons(); updateUI();
 }
-
-function goToMenu() {
+function goToMenu(){
   document.getElementById('message').style.display='none';
   document.getElementById('game-wrapper').style.display='none';
   document.getElementById('map-select').style.display='flex';
 }
-
-function startGame(mapDef) {
+function startGame(map){
   document.getElementById('map-select').style.display='none';
   document.getElementById('game-wrapper').style.display='flex';
-  initState(mapDef);
-  buildTowerButtons(); updateUI();
+  initState(map);buildTowerButtons();updateUI();
 }
 
-// =====================================================================
-// MAP SELECT SCREEN
-// =====================================================================
-function buildMapSelect() {
-  const grid=document.getElementById('map-grid');
-  grid.innerHTML='';
-  MAP_DEFS.forEach(mapDef=>{
-    const card=document.createElement('div');
-    card.className='map-card';
-
-    // Mini canvas preview
-    const previewCanvas=document.createElement('canvas');
-    previewCanvas.width=220; previewCanvas.height=140;
-    previewCanvas.style.width='100%';
-    previewCanvas.style.height='auto';
-    const pCtx=previewCanvas.getContext('2d');
-
-    // Scale path to fit preview (700×520 → 220×140 with padding)
-    const pw=220,ph=140,pad=12;
-    const sx=(pw-pad*2)/700, sy=(ph-pad*2)/520;
-    drawPathOnCtx(pCtx, mapDef.path, mapDef.grassColor, pw, ph, sx, sy, pad, pad);
-
-    // Dashed guide on preview
-    pCtx.strokeStyle='rgba(255,255,255,0.2)'; pCtx.lineWidth=1;
-    pCtx.setLineDash([5,4]);
-    pCtx.beginPath();
-    pCtx.moveTo(mapDef.path[0].x*sx+pad, mapDef.path[0].y*sy+pad);
-    for(let i=1;i<mapDef.path.length;i++) pCtx.lineTo(mapDef.path[i].x*sx+pad, mapDef.path[i].y*sy+pad);
-    pCtx.stroke(); pCtx.setLineDash([]);
-
-    // Start/end dots
-    const p0=mapDef.path[0], pE=mapDef.path[mapDef.path.length-1];
-    pCtx.fillStyle='#27ae60'; pCtx.beginPath(); pCtx.arc(p0.x*sx+pad,p0.y*sy+pad,5,0,Math.PI*2); pCtx.fill();
-    pCtx.fillStyle='#e74c3c'; pCtx.beginPath(); pCtx.arc(pE.x*sx+pad,pE.y*sy+pad,5,0,Math.PI*2); pCtx.fill();
-
-    card.appendChild(previewCanvas);
-
-    const info=document.createElement('div'); info.className='map-card-info';
-    info.innerHTML=`<div class="map-card-name">${mapDef.name}</div>
-      <div class="map-card-diff ${mapDef.diffClass}">★ ${mapDef.difficulty}</div>`;
-    card.appendChild(info);
-
-    card.onclick=()=>startGame(mapDef);
+// ===== MAP SELECT =====
+function buildMapSelect(){
+  const grid=document.getElementById('map-grid');grid.innerHTML='';
+  MAP_DEFS.forEach(m=>{
+    const card=document.createElement('div');card.className='map-card';
+    const pc=document.createElement('canvas');pc.width=200;pc.height=125;
+    const c=pc.getContext('2d'),sx=(200-16)/700,sy=(125-16)/520;
+    drawPathOnCtx(c,m.path,m.grassColor,200,125,sx,sy,8,8);
+    c.strokeStyle='rgba(255,255,255,.2)';c.lineWidth=1;c.setLineDash([5,4]);
+    c.beginPath();c.moveTo(m.path[0].x*sx+8,m.path[0].y*sy+8);
+    for(let i=1;i<m.path.length;i++)c.lineTo(m.path[i].x*sx+8,m.path[i].y*sy+8);
+    c.stroke();c.setLineDash([]);
+    const p0=m.path[0],pe=m.path[m.path.length-1];
+    c.fillStyle='#27ae60';c.beginPath();c.arc(p0.x*sx+8,p0.y*sy+8,4,0,Math.PI*2);c.fill();
+    c.fillStyle='#e74c3c';c.beginPath();c.arc(pe.x*sx+8,pe.y*sy+8,4,0,Math.PI*2);c.fill();
+    card.appendChild(pc);
+    const info=document.createElement('div');info.className='map-card-info';
+    info.innerHTML=`<div class="map-card-name">${m.name}</div><div class="map-card-diff ${m.diffClass}">★ ${m.difficulty}</div>`;
+    card.appendChild(info);card.onclick=()=>startGame(m);
     grid.appendChild(card);
   });
 }
 
-// =====================================================================
-// INIT
-// =====================================================================
 buildMapSelect();
 requestAnimationFrame(gameLoop);
 </script>
